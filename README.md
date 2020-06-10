@@ -1,6 +1,6 @@
 # Haskell Code Spot
 
-Tool to spot odd runtime behaviour of Haskell programs.  
+Visual tool to spot odd runtime behaviour of Haskell programs.  
 **Keywords:** *data scientist, GHC eventlog, UI experiments, creative/live coding*
 
 ### Learn these for coding 
