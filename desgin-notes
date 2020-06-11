@@ -1,0 +1,3 @@
+- do not keep data in the memory
+- parse eventlog every time
+

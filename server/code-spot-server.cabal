@@ -10,6 +10,8 @@ cabal-version:       >=1.10
 
 executable code-spot-server
   main-is:          Main.hs
+  other-modules:    EventlogJSON
+
   default-language: Haskell2010
   build-depends:    base
                   , scotty
@@ -18,3 +20,10 @@ executable code-spot-server
                   , wai
                   , text
                   , wai-websockets
+                  , wai-extra
+                  , wai-cors
+                  , ghc-events
+                  , aeson
+                  , bytestring
+                  , base64-bytestring
+                  , http-types
