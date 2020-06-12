@@ -6,7 +6,8 @@
   let response;
   let restResponse = '';
   // let eventlogFilepath = '/home/csaba/haskell/lambdacube-quake3/q3mapviewer.eventlog';
-  let eventlogFilepath = '/home/andorp/Sources/grin-tech/grin/grin.eventlog';
+  //let eventlogFilepath = '/home/andorp/Sources/grin-tech/grin/grin.eventlog';
+  let eventlogFilepath = '../data/grin.eventlog';
   let eventlog;
   let eventLogOffset = 0;
   let eventLogIdx = 10000;
