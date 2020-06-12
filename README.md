@@ -1,6 +1,6 @@
 # Haskell Code Spot
 
-Visual tool to spot odd runtime behaviour of Haskell programs.  
+Visual tool to spot odd runtime behaviour of Haskell programs.
 **Keywords:** *data scientist, GHC eventlog, UI experiments, creative/live coding*
 
 ### Learn these for coding
@@ -29,3 +29,13 @@ Now open [http://localhost:5000/](http://localhost:5000/) in your browser!
 
 You will see a visualisation of [data/grin.eventlog](data/grin.eventlog)
 (change in [client/src/App.svelte](client/src/App.svelte)).
+
+### How to build your eventlog
+
+If stack project is used, profiling must be enabled.
+After compiled with profiling, one need to run it with RTS options plh.
+
+```
+stack build --profile --executable-profiling --library-profiling
+stack exec --profile EXECUTABLE -- ARGUMENTS +RTS -p -l -h
+```
