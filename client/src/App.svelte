@@ -10,38 +10,41 @@
   let eventLogOffset = 0;
   let eventLogIdx = 10000;
 
-  onMount(() => restTest());
+  let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads']
+  let diagramMode = 'HeapSize';
 
-  function webSocketTest()
-  {
-    var ws = new WebSocket("ws://localhost:3000");
+  onMount(() => fetchEventData());
 
-    ws.onopen = () => {
-      ws.send("initial from js");
-    };
+  // function webSocketTest()
+  // {
+  //   var ws = new WebSocket("ws://localhost:3000");
 
-    ws.onmessage = evt => {
-      var m = evt.data;
-      response = "WS received: " + m;
-      console.log( m );
-    };
+  //   ws.onopen = () => {
+  //     ws.send("initial from js");
+  //   };
 
-    ws.onclose = function() {
-      //response = "ws closed";
-      //alert("ws closed");
-    };
+  //   ws.onmessage = evt => {
+  //     var m = evt.data;
+  //     response = "WS received: " + m;
+  //     console.log( m );
+  //   };
 
-    window.onbeforeunload = evt => {
-      socket.close();
-    };
-  }
+  //   ws.onclose = function() {
+  //     //response = "ws closed";
+  //     //alert("ws closed");
+  //   };
+
+  //   window.onbeforeunload = evt => {
+  //     socket.close();
+  //   };
+  // }
 
   let el, el2, el3, el4;
   let elThreadInfo;
 
-  async function restTest() {
+  async function fetchEventData() {
     // let uri = `http://localhost:3000/eventlog/${btoa(eventlogFilepath)}`;
-    let uri = `http://localhost:3000/eventlog/${btoa(eventlogFilepath)}?offset=0&idx=10000`;
+    let uri = `http://localhost:3000/eventlog/${btoa(eventlogFilepath)}?offset=0&idx=100000`;
     // let uri = `http://localhost:3000/eventlog/${btoa(eventlogFilepath)}?event-type=RunThread&event-type=StopThread`;
     console.log("send:", uri);
     let response = await fetch(uri);
@@ -340,6 +343,18 @@
       .attr('text-anchor', 'middle')
       .text('Heap Allocated');
   };
+
+  let diagramOptions = [
+    { id: 1, text: 'Heap Size', value: 'HeapSize' },
+    { id: 2, text: 'Heap Live', value: 'HeapLive' },
+    { id: 3, text: 'Heap Allocated', value: 'HeapAllocated' },
+    { id: 4, text: 'Active Threads', value: 'ActiveThreads' }
+  ];
+  let diagramSelected;
+  function handleDiagramSubmit() {
+    diagramMode = diagramSelected.value;
+  }
+
 </script>
 
 <style>
@@ -387,22 +402,21 @@
   <label for="myfile">Eventlog file path:</label>
   <input type="text" name="myfile" bind:value={eventlogFilepath}>
   <p>{eventlogFilepath}</p>
+  <button on:click={fetchEventData}>Fetch Event Data</button>
 </div>
 
-<div>
-  <button on:click={webSocketTest}>websocket test</button>
-  <button on:click={restTest}>rest test</button>
-</div>
+<form on:submit|preventDefault={handleDiagramSubmit} on:change="{ () => handleDiagramSubmit(diagramSelected) }">
+  <select bind:value={diagramSelected}>
+    {#each diagramOptions as diagramOption}
+      <option value={diagramOption}>
+        {diagramOption.text}
+      </option>
+    {/each}
+  </select>
+</form>
 
-<div>
-<h2>rest response</h2>
-{@html restResponse}
-</div>
-
-<p>{response}</p>
-
-<svg bind:this={elThreadInfo} width="960" height="500"></svg>
-<svg bind:this={el} width="960" height="500"></svg>
-<svg bind:this={el2} width="960" height="500"></svg>
-<svg bind:this={el3} width="960" height="500"></svg>
-<svg bind:this={el4} width="960" height="500"></svg>
+<svg display="{diagramMode=='HeapSize' ? 'intial' : 'none' }"      bind:this={el} width="960" height="500"></svg>
+<svg display="{diagramMode=='HeapSize' ? 'intial' : 'none' }"      bind:this={el2} width="960" height="500"></svg>
+<svg display="{diagramMode=='HeapLive' ? 'intial' : 'none' }"      bind:this={el3} width="960" height="500"></svg>
+<svg display="{diagramMode=='HeapAllocated' ? 'intial' : 'none' }" bind:this={el4} width="960" height="500"></svg>
+<svg display="{diagramMode=='ActiveThreads' ? 'intial' : 'none' }" bind:this={elThreadInfo} width="960" height="500"></svg>
