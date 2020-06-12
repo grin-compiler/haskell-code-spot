@@ -39,13 +39,14 @@ httpApp = scottyApp $ do
 
   get "/eventlog/:path" $ do
     eventlogPath <- BS8.unpack . Base64.decodeLenient <$> param "path"
-    liftIO $ putStrLn $ "got evlog request for " ++ show eventlogPath
+    (mOffset, mIdx) <- range
+    liftIO $ putStrLn $ "got evlog request for " ++ show (eventlogPath, mOffset, mIdx)
     liftIO (GHC.readEventLogFromFile eventlogPath) >>= \case
       Left err  -> do
         liftIO $ putStrLn "eventlog error"
         raise $ LText.pack err
       Right all@(GHC.EventLog h (GHC.Data evs)) -> do
-        let evlog = GHC.EventLog h $ GHC.Data $ take 10000 evs
+        let evlog = GHC.EventLog h $ GHC.Data $ maybe id take mIdx $ maybe id drop mOffset $ evs
         liftIO $ do
           --Aeson.encodeFile (eventlogPath ++ ".json") all
           --Aeson.encodeFile (eventlogPath ++ ".small.json") evlog
@@ -53,6 +54,11 @@ httpApp = scottyApp $ do
         json evlog
 
   notFound notFoundA
+
+range :: ActionM (Maybe Int, Maybe Int)
+range = do
+  ps <- params
+  pure (read . LText.unpack <$> lookup "offset" ps, read . LText.unpack <$> lookup "idx" ps)
 
 notFoundA :: ActionM ()
 notFoundA = do

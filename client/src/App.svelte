@@ -6,6 +6,7 @@
   let response;
   let restResponse = '';
   let eventlogFilepath = '/home/csaba/haskell/lambdacube-quake3/q3mapviewer.eventlog';
+  // let eventlogFilepath = '/home/andorp/Sources/grin-tech/grin/grin.eventlog';
   let eventlog;
 
   onMount(() => restTest());
@@ -38,7 +39,7 @@
   let el, el2, el3, el4;
 
   async function restTest() {
-    let uri = `http://localhost:3000/eventlog/${btoa(eventlogFilepath)}`;
+    let uri = `http://localhost:3000/eventlog/${btoa(eventlogFilepath)}?offset=0&idx=10000`;
     console.log("send:", uri);
     let response = await fetch(uri);
     let data = await response.json();
