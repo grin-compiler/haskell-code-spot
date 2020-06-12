@@ -25,3 +25,6 @@ In another terminal:
     $ cd src && npm install && npm run dev
 
 Now open [http://localhost:5000/](http://localhost:5000/) in your browser!
+
+You will see a visualisation of [data/grin.eventlog](data/grin.eventlog)
+(change in [client/src/App.svelte](client/src/App.svelte)).
