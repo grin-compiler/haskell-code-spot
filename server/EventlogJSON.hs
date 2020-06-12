@@ -9,6 +9,7 @@ import qualified Data.ByteString.Base64 as Base64
 
 import GHC.RTS.Events as GHC
 
+
 instance FromJSON BS.ByteString where
   parseJSON a = parseJSON a >>= either fail pure . Base64.decode
 instance ToJSON BS.ByteString where

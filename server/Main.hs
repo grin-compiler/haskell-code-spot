@@ -1,7 +1,9 @@
 {-# LANGUAGE OverloadedStrings, LambdaCase #-}
+module Main where
 
 import Web.Scotty
 
+import Data.Maybe (mapMaybe)
 import Data.Monoid (mconcat)
 import qualified Data.Text.Lazy as LText
 import Control.Monad.IO.Class
@@ -20,6 +22,7 @@ import qualified GHC.RTS.Events as GHC
 import Network.HTTP.Types.Status (created201, internalServerError500, notFound404)
 
 import EventlogJSON
+import FilterEvents
 
 port = 3000
 
@@ -40,13 +43,18 @@ httpApp = scottyApp $ do
   get "/eventlog/:path" $ do
     eventlogPath <- BS8.unpack . Base64.decodeLenient <$> param "path"
     (mOffset, mIdx) <- range
+    mEventFilters <- eventFilters
     liftIO $ putStrLn $ "got evlog request for " ++ show (eventlogPath, mOffset, mIdx)
     liftIO (GHC.readEventLogFromFile eventlogPath) >>= \case
       Left err  -> do
         liftIO $ putStrLn "eventlog error"
         raise $ LText.pack err
       Right all@(GHC.EventLog h (GHC.Data evs)) -> do
-        let evlog = GHC.EventLog h $ GHC.Data $ maybe id take mIdx $ maybe id drop mOffset $ evs
+        let evlog = GHC.EventLog h $ GHC.Data
+                  $ maybe id filterEvents mEventFilters -- Keep the events of such kind
+                  $ maybe id take mIdx    -- Take this number of events
+                  $ maybe id drop mOffset -- Skip the beginning
+                  $ evs
         liftIO $ do
           --Aeson.encodeFile (eventlogPath ++ ".json") all
           --Aeson.encodeFile (eventlogPath ++ ".small.json") evlog
@@ -59,6 +67,7 @@ range :: ActionM (Maybe Int, Maybe Int)
 range = do
   ps <- params
   pure (read . LText.unpack <$> lookup "offset" ps, read . LText.unpack <$> lookup "idx" ps)
+
 
 notFoundA :: ActionM ()
 notFoundA = do
