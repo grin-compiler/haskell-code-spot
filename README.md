@@ -11,7 +11,8 @@ Visual tool to spot odd runtime behaviour of Haskell programs.
 - CodeMirror *(https://codemirror.net/doc/manual.html#api)*
 - Scotty *(https://hackage.haskell.org/package/scotty)*
 - GHC RTS design *(https://takenobu-hs.github.io/downloads/haskell_ghc_illustrated.pdf)*
-- GHC eventlog *(https://hackage.haskell.org/package/ghc-events)*
+- GHC Eventlog *(https://www.well-typed.com/blog/2019/09/eventful-ghc/)*
+- ghc-events library *(https://hackage.haskell.org/package/ghc-events)*
 - GHC HIE files *(https://www.haskell.org/ghc/blog/20190626-HIEFiles.html)*
 
 ### Quick Start Guide
