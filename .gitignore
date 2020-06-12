@@ -1,0 +1,7 @@
+client/node_modules/
+client/public/build/
+
+.DS_Store
+.stack-work/
+package-lock.json
+stack.yaml.lock
