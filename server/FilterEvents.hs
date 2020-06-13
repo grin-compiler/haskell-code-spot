@@ -6,7 +6,6 @@ import qualified Data.Text.Lazy as LText
 import GHC.RTS.Events as GHC
 import Web.Scotty
 
-
 type EventName = LText.Text
 
 -- eventTypeNum from GHC.RTS.Events.Binary would be a nicer solution here.
@@ -17,6 +16,10 @@ matchEvent :: [EventName] -> Event -> Maybe Event
 matchEvent en e = case take 1 $ words $ show $ evSpec e of
   [n] | LText.pack n `elem` en -> Just e
   _                            -> Nothing
+
+mkEventFilters :: [EventName] -> Maybe [EventName]
+mkEventFilters [] = Nothing
+mkEventFilters xs = Just xs
 
 -- | Return 'Just eventNames' for the filter to keep. Otherwise Nothing.
 eventFilters :: ActionM (Maybe [EventName])

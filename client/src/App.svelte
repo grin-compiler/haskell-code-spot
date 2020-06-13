@@ -10,6 +10,8 @@
   let response;
   let restResponse = '';
   let eventlogFilepath = '../data/grin.eventlog';
+  let eventlogOffset = 0;
+  let eventlogIndex = 10000;
   let eventlog;
 
   onMount(() => fetchEventData());
@@ -38,13 +40,21 @@
   //   };
   // }
 
+  async function postData(url = '', data = {}) {
+    const response = await fetch(url, {
+      method: 'POST',
+      cache: 'no-cache',
+      body: JSON.stringify(data)
+    });
+    return response.json();
+  }
+
   async function fetchEventData() {
-    // let uri = `http://localhost:3000/eventlog/${btoa(eventlogFilepath)}`;
-    let uri = `http://localhost:3000/eventlog/${btoa(eventlogFilepath)}?offset=0&idx=100000`;
-    // let uri = `http://localhost:3000/eventlog/${btoa(eventlogFilepath)}?event-type=RunThread&event-type=StopThread`;
-    console.log("send:", uri);
-    let response = await fetch(uri);
-    let data = await response.json();
+    let data = await postData('http://localhost:3000/eventlog',{
+      path: eventlogFilepath,
+      offset: 0,
+      idx: 100000
+    });
     restResponse = "<h3> got eventlog json, check console </h3>";
     console.log('response: ', data);
     eventlog = data;
