@@ -23,6 +23,7 @@ import Network.HTTP.Types.Status (created201, internalServerError500, notFound40
 
 import EventlogJSON
 import FilterEvents
+import qualified SourceView
 
 port = 3000
 
@@ -60,6 +61,8 @@ httpApp = scottyApp $ do
           --Aeson.encodeFile (eventlogPath ++ ".small.json") evlog
           putStrLn "eventlog success"
         json evlog
+
+  SourceView.endpoints
 
   notFound notFoundA
 
