@@ -1,17 +1,15 @@
 <script>
-  import { onMount } from 'svelte';
+  import { onMount }    from 'svelte';
+  import HeapSize       from './HeapSize.svelte';
+  import HeapLive       from './HeapLive.svelte';
+  import HeapAllocated  from './HeapAllocated.svelte';
+  import ActiveThreads  from './ActiveThreads.svelte';
   import * as d3 from 'd3';
 
-  let name = 'world';
   let response;
   let restResponse = '';
   let eventlogFilepath = '../data/grin.eventlog';
   let eventlog;
-  let eventLogOffset = 0;
-  let eventLogIdx = 10000;
-
-  let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads']
-  let diagramMode = 'HeapSize';
 
   onMount(() => fetchEventData());
 
@@ -39,9 +37,6 @@
   //   };
   // }
 
-  let el, el2, el3, el4;
-  let elThreadInfo;
-
   async function fetchEventData() {
     // let uri = `http://localhost:3000/eventlog/${btoa(eventlogFilepath)}`;
     let uri = `http://localhost:3000/eventlog/${btoa(eventlogFilepath)}?offset=0&idx=100000`;
@@ -52,297 +47,10 @@
     restResponse = "<h3> got eventlog json, check console </h3>";
     console.log('response: ', data);
     eventlog = data;
-
-    let evs = data.dat.events;
-    render(evs);
-    render2(evs);
-    render3(evs);
-    render4(evs);
-    renderThreads(evs);
   }
 
-
-  const render = data => {
-
-    data = data.filter(e => e.evSpec.tag === 'HeapSize');
-
-    const svg     = d3.select(el);
-    const width   = +svg.attr('width');
-    const height  = +svg.attr('height');
-
-    const xValue = d => d.evSpec.sizeBytes;
-    const yValue = d => d.evTime/1000000000;
-    const margin = { top: 40, right: 20, bottom: 20, left:50 };
-    const innerWidth  = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-
-    const xScale = d3.scaleLinear()
-      .domain([0, d3.max(data, xValue)])
-      .range([0, innerWidth]);
-
-    const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data, yValue)])
-      .range([0, innerHeight]);
-
-    const g = svg.append('g')
-      .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-    const xAxis = d3.axisBottom(xScale)
-      .tickFormat(d3.format('.3s'))
-      .tickSize(-innerHeight);
-
-    g.append('g').call(d3.axisLeft(yScale));
-    g.append('g').call(xAxis)
-      .attr('transform', `translate(0, ${innerHeight})`);
-
-    g.selectAll('rect').data(data)
-        .enter().append('rect')
-          .attr('y', d => yScale(yValue(d)))
-          .attr('width', d => xScale(xValue(d)))
-          .attr('height', d => 0.1);
-
-    g.append('text')
-      .attr('x', innerWidth / 2)
-      .attr('y', -10)
-      .attr('text-anchor', 'middle')
-      .text('Heap Size');
-  };
-
-
-  const render2 = data => {
-
-    data = data.filter(e => e.evSpec.tag === 'HeapSize');
-
-    const svg     = d3.select(el2);
-    const width   = +svg.attr('width');
-    const height  = +svg.attr('height');
-
-    const yValue = d => d.evSpec.sizeBytes;
-    const xValue = d => d.evTime/1000000000;
-    const margin = { top: 40, right: 20, bottom: 30, left:70 };
-    const innerWidth  = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-
-    const xScale = d3.scaleLinear()
-      .domain([0, d3.max(data, xValue)])
-      .range([0, innerWidth]);
-
-    const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data, yValue)])
-      .range([innerHeight, 0]);
-
-    const g = svg.append('g')
-      .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-    const xAxis = d3.axisBottom(xScale)
-      .tickPadding(10)
-      .tickSize(-innerHeight);
-
-    const yAxis = d3.axisLeft(yScale)
-      .tickFormat(d3.format('.3s'))
-      .tickPadding(5)
-      .tickSize(-innerWidth);
-
-    g.append('g').call(yAxis);
-    g.append('g').call(xAxis)
-      .attr('transform', `translate(0, ${innerHeight})`);
-
-    const lineGenerator = d3.line()
-      .x(d => xScale(xValue(d)))
-      .y(d => yScale(yValue(d)))
-      .curve(d3.curveBasis);
-
-    g.append('path')
-      .attr('class', 'line-path')
-      .attr('d', lineGenerator(data));
-
-    g.append('text')
-      .attr('x', innerWidth / 2)
-      .attr('y', -10)
-      .attr('text-anchor', 'middle')
-      .text('Heap Size');
-  };
-
-  const render3 = data => {
-
-    data = data.filter(e => e.evSpec.tag === 'HeapLive');
-
-    const svg     = d3.select(el3);
-    const width   = +svg.attr('width');
-    const height  = +svg.attr('height');
-
-    const yValue = d => d.evSpec.liveBytes;
-    const xValue = d => d.evTime/1000000000;
-    const margin = { top: 40, right: 20, bottom: 30, left:70 };
-    const innerWidth  = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-
-    const xScale = d3.scaleLinear()
-      .domain([0, d3.max(data, xValue)])
-      .range([0, innerWidth]);
-
-    const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data, yValue)])
-      .range([innerHeight, 0]);
-
-    const g = svg.append('g')
-      .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-    const xAxis = d3.axisBottom(xScale)
-      .tickPadding(10)
-      .tickSize(-innerHeight);
-
-    const yAxis = d3.axisLeft(yScale)
-      .tickFormat(d3.format('.3s'))
-      .tickPadding(5)
-      .tickSize(-innerWidth);
-
-    g.append('g').call(yAxis);
-    g.append('g').call(xAxis)
-      .attr('transform', `translate(0, ${innerHeight})`);
-
-    const lineGenerator = d3.line()
-      .x(d => xScale(xValue(d)))
-      .y(d => yScale(yValue(d)))
-      .curve(d3.curveBasis);
-
-    g.append('path')
-      .attr('class', 'line-path')
-      .attr('d', lineGenerator(data));
-
-    g.append('text')
-      .attr('x', innerWidth / 2)
-      .attr('y', -10)
-      .attr('text-anchor', 'middle')
-      .text('Heap Live');
-  };
-
-  const renderThreads = data => {
-    const timescale = 1000000000;
-    data = data.filter(e => (e.evSpec.tag === 'RunThread') || (e.evSpec.tag === 'StopThread'));
-
-    let activeThreadsData = [];
-    let activeThreads = [];
-    data.forEach(e => {
-      // e represents a RunThread or a StopThread.
-      // Run adds, Stop removes the thread from the active threads array.
-      const idx = activeThreads.indexOf(e.evSpec.thread);
-      if (e.evSpec.tag === 'RunThread') {
-        if (idx === -1) {
-          activeThreads.push(e.evSpec.thread); // Add element
-        }
-      } else if (e.evSpec.tag === 'StopThread') {
-        if (idx !== -1) {
-          activeThreads.splice(idx, 1); // Remove element
-        }
-      }
-      e.activeThreadCount = activeThreads.length;
-    });
-
-    const svg    = d3.select(elThreadInfo);
-    const width  = +svg.attr('width');
-    const height = +svg.attr('height');
-
-    const yValue = d => d.activeThreadCount;
-    const xValue = d => d.evTime/1000000000;
-    const margin = { top: 40, right: 20, bottom: 30, left:70 };
-    const innerWidth  = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-
-    const xScale = d3.scaleLinear()
-      .domain([0, d3.max(data, xValue)])
-      .range([0, innerWidth]);
-
-    const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data, yValue)])
-      .range([innerHeight, 0]);
-
-    const g = svg.append('g')
-      .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-    const xAxis = d3.axisBottom(xScale)
-      .tickPadding(10)
-      .tickSize(-innerHeight);
-
-    const yAxis = d3.axisLeft(yScale)
-      .tickFormat(d3.format('.3s'))
-      .tickPadding(5)
-      .tickSize(-innerWidth);
-
-    g.append('g').call(yAxis);
-    g.append('g').call(xAxis)
-      .attr('transform', `translate(0, ${innerHeight})`);
-
-    const lineGenerator = d3.line()
-      .x(d => xScale(xValue(d)))
-      .y(d => yScale(yValue(d)));
-      // .curve(d3.curveBasis);
-
-    g.append('path')
-      .attr('class', 'line-path')
-      .attr('d', lineGenerator(data));
-
-    g.append('text')
-      .attr('x', innerWidth / 2)
-      .attr('y', -10)
-      .attr('text-anchor', 'middle')
-      .text('Number of active threads');
-
-  };
-
-  const render4 = data => {
-
-    data = data.filter(e => e.evSpec.tag === 'HeapAllocated');
-
-    const svg     = d3.select(el4);
-    const width   = +svg.attr('width');
-    const height  = +svg.attr('height');
-
-    const yValue = d => d.evSpec.allocBytes;
-    const xValue = d => d.evTime/1000000000;
-    const margin = { top: 40, right: 20, bottom: 30, left:70 };
-    const innerWidth  = width - margin.left - margin.right;
-    const innerHeight = height - margin.top - margin.bottom;
-
-    const xScale = d3.scaleLinear()
-      .domain([0, d3.max(data, xValue)])
-      .range([0, innerWidth]);
-
-    const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data, yValue)])
-      .range([innerHeight, 0]);
-
-    const g = svg.append('g')
-      .attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-    const xAxis = d3.axisBottom(xScale)
-      .tickPadding(10)
-      .tickSize(-innerHeight);
-
-    const yAxis = d3.axisLeft(yScale)
-      .tickFormat(d3.format('.3s'))
-      .tickPadding(5)
-      .tickSize(-innerWidth);
-
-    g.append('g').call(yAxis);
-    g.append('g').call(xAxis)
-      .attr('transform', `translate(0, ${innerHeight})`);
-
-    const lineGenerator = d3.line()
-      .x(d => xScale(xValue(d)))
-      .y(d => yScale(yValue(d)))
-      .curve(d3.curveBasis);
-
-    g.append('path')
-      .attr('class', 'line-path')
-      .attr('d', lineGenerator(data));
-
-    g.append('text')
-      .attr('x', innerWidth / 2)
-      .attr('y', -10)
-      .attr('text-anchor', 'middle')
-      .text('Heap Allocated');
-  };
+  let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads']
+  let diagramMode = 'HeapSize';
 
   let diagramOptions = [
     { id: 1, text: 'Heap Size', value: 'HeapSize' },
@@ -353,8 +61,8 @@
   let diagramSelected;
   function handleDiagramSubmit() {
     diagramMode = diagramSelected.value;
+    eventlog = eventlog;
   }
-
 </script>
 
 <style>
@@ -395,7 +103,6 @@
   :global(.tick line) {
     stroke: #C0C0BB;
   }
-
 </style>
 
 <div>
@@ -405,7 +112,7 @@
   <button on:click={fetchEventData}>Fetch Event Data</button>
 </div>
 
-<form on:submit|preventDefault={handleDiagramSubmit} on:change="{ () => handleDiagramSubmit(diagramSelected) }">
+<form on:change="{ () => handleDiagramSubmit(diagramSelected) }">
   <select bind:value={diagramSelected}>
     {#each diagramOptions as diagramOption}
       <option value={diagramOption}>
@@ -415,8 +122,12 @@
   </select>
 </form>
 
-<svg display="{diagramMode=='HeapSize' ? 'intial' : 'none' }"      bind:this={el} width="960" height="500"></svg>
-<svg display="{diagramMode=='HeapSize' ? 'intial' : 'none' }"      bind:this={el2} width="960" height="500"></svg>
-<svg display="{diagramMode=='HeapLive' ? 'intial' : 'none' }"      bind:this={el3} width="960" height="500"></svg>
-<svg display="{diagramMode=='HeapAllocated' ? 'intial' : 'none' }" bind:this={el4} width="960" height="500"></svg>
-<svg display="{diagramMode=='ActiveThreads' ? 'intial' : 'none' }" bind:this={elThreadInfo} width="960" height="500"></svg>
+{#if diagramMode == 'HeapSize'}
+<HeapSize eventlogData={eventlog}/>
+{:else if diagramMode == 'HeapLive'}
+<HeapLive eventlogData={eventlog}/>
+{:else if diagramMode == 'HeapAllocated'}
+<HeapAllocated eventlogData={eventlog}/>
+{:else if diagramMode == 'ActiveThreads'}
+<ActiveThreads eventlogData={eventlog}/>
+{/if}
