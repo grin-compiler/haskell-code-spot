@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings, LambdaCase, RecordWildCards #-}
-module SourceView where
+module EndPoint.SourceView where
 
 import Control.Monad.IO.Class
 import Data.Aeson (FromJSON(..), withObject, (.:), object, (.=))
