@@ -11,7 +11,8 @@
   let restResponse = '';
   let eventlogFilepath = '../data/grin.eventlog';
   let eventlogOffset = 0;
-  let eventlogIndex = 10000;
+  let eventlogIndex = 100000;
+  let eventKinds = [];
   let eventlog;
 
   onMount(() => fetchEventData());
@@ -52,8 +53,9 @@
   async function fetchEventData() {
     let data = await postData('http://localhost:3000/eventlog',{
       path: eventlogFilepath,
-      offset: 0,
-      idx: 100000
+      offset: eventlogOffset,
+      idx: eventlogIndex,
+      'event-type': eventKinds
     });
     restResponse = "<h3> got eventlog json, check console </h3>";
     console.log('response: ', data);
@@ -62,6 +64,9 @@
 
   let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads']
   let diagramMode = 'HeapSize';
+  const diagramModeElim = cases => d => {
+    return cases[diagramMode];
+  }
 
   let diagramOptions = [
     { id: 1, text: 'Heap Size', value: 'HeapSize' },
@@ -72,7 +77,13 @@
   let diagramSelected;
   function handleDiagramSubmit() {
     diagramMode = diagramSelected.value;
-    eventlog = eventlog;
+    eventKinds = diagramModeElim({
+      HeapSize: ['HeapSize'],
+      HeapLive: ['HeapLive'],
+      HeapAllocated: ['HeapAllocated'],
+      ActiveThreads: ['RunThread', 'StopThread']
+    })(diagramMode);
+    fetchEventData();
   }
 </script>
 
