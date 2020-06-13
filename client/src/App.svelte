@@ -5,7 +5,6 @@
   import HeapAllocated  from './HeapAllocated.svelte';
   import ActiveThreads  from './ActiveThreads.svelte';
   import * as d3 from 'd3';
-  import SourceView from './SourceView.svelte';
 
 
   let response;
@@ -106,8 +105,6 @@
     stroke: #C0C0BB;
   }
 </style>
-
-<SourceView/>
 
 <div>
   <label for="myfile">Eventlog file path:</label>
