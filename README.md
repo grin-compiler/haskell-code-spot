@@ -42,6 +42,10 @@ stack exec --profile EXECUTABLE -- ARGUMENTS +RTS -p -l -h
 
 ### Previews:
 
+This project is still in the proof-of-concept phase, but we had a great fun implementing the
+initial version of heap inspections and the step-by-step debugger. All of these features
+are based on visualizing the EventLog from GHC.
+
 Heap Live
 ![](https://github.com/grin-compiler/haskell-code-spot/blob/master/doc/images/heaplive.png)
 
