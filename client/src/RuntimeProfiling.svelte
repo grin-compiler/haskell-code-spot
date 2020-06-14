@@ -121,17 +121,17 @@ Click on fetch file content...
   }
 
   // Handle the src/Pipeline/Pipeline.hs:374:38-75 case
-  function insertLineAnnotation(line, start, end) {
-    const s = start-1;
-    const e = end+1;
-    return line.substring(0, s) + '<span style="color:red">' + line.substring(s, e) + '</span>' + line.substring(e);
+  function insertLineAnnotation(line, start, end, stacktrace) {
+    const s = start - 1;
+    const e = end + 1;
+    return line.substring(0, s) + '<span style="color:red" title="' + stacktrace + '">' + line.substring(s, e) + '</span>' + line.substring(e);
   }
 
   // Handle the src/Pipeline/Pipeline.hs:(357,1)-(398,37) case
-  function insertBlockAnnotation(line, start, end) {
+  function insertBlockAnnotation(line, start, end, stacktrace) {
     if (start !== undefined) {
       const s = start - 1;
-      return line.substring(0,s) + '<span style="color:red">' + line.substring(s);
+      return line.substring(0,s) + '<span style="color:red" title="' + stacktrace + '">' + line.substring(s);
     } else if (end !== undefined) {
       const e = end + 1;
       return line.substring(0,e) + '</span>' + line.substring(e);
@@ -144,6 +144,7 @@ Click on fetch file content...
     if (moduleStackTrace[current] === undefined) {
       return content;
     }
+    const stacktrace = moduleStackTrace[current].stackTrace.join('\n');
     const lines = content.split(/\r\n|\r|\n/);
     const padSize = ('' + lines.length).length;
     let annotatedContent = '';
@@ -153,13 +154,13 @@ Click on fetch file content...
       if (sourceRange !== undefined) {
         if (sourceRange.line !== undefined) {
           if (i == sourceRange.line) {
-            line = insertLineAnnotation(l, sourceRange.start, sourceRange.end);
+            line = insertLineAnnotation(l, sourceRange.start, sourceRange.end, stacktrace);
           }
         } else if (sourceRange.blockStartLine !== undefined) {
           if (i == sourceRange.blockStartLine) {
-            line = insertBlockAnnotation(l, sourceRange.blockStartChar, undefined);
+            line = insertBlockAnnotation(l, sourceRange.blockStartChar, undefined, stacktrace);
           } else if (i == sourceRange.blockEndLine) {
-            line = insertBlockAnnotation(l, undefined, sourceRange.blockEndChar);
+            line = insertBlockAnnotation(l, undefined, sourceRange.blockEndChar, stacktrace);
           }
         }
       }
