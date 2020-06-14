@@ -39,3 +39,15 @@ After compiled with profiling, one need to run it with RTS options plh.
 stack build --profile --executable-profiling --library-profiling
 stack exec --profile EXECUTABLE -- ARGUMENTS +RTS -p -l -h
 ```
+
+### Previews:
+
+Heap Live
+![](https://github.com/grin-compiler/haskell-code-spot/blob/master/doc/images/heaplive.png)
+
+Heap Size
+![](https://github.com/grin-compiler/haskell-code-spot/blob/master/doc/images/heapsize.png)
+
+Cost Center based stack trace in step-by-step style.
+![](https://github.com/grin-compiler/haskell-code-spot/blob/master/doc/images/stacktrace1.jpg)
+![](https://github.com/grin-compiler/haskell-code-spot/blob/master/doc/images/stacktrace2.jpg)
