@@ -64,7 +64,7 @@
     { id: 2, text: 'Heap Live', value: 'HeapLive' },
     { id: 3, text: 'Heap Allocated', value: 'HeapAllocated' },
     { id: 4, text: 'Active Threads', value: 'ActiveThreads' },
-    { id: 5, text: 'Run time profiling', value: 'RuntimeProfiling' }
+    { id: 5, text: 'Runtime profiling', value: 'RuntimeProfiling' }
   ];
   let diagramSelected;
   function handleDiagramSubmit() {
@@ -74,10 +74,7 @@
       HeapLive:         ['HeapLive'],
       HeapAllocated:    ['HeapAllocated'],
       ActiveThreads:    ['RunThread', 'StopThread'],
-      RuntimeProfiling: ['HeapProfCostCentre','HeapProfBegin', 'HeapProfSampleBegin'
-                        ,'HeapProfSampleEnd','HeapBioProfSampleBegin','HeapProfSampleCostCentre'
-                        ,'HeapProfSampleString', 'HeapProfSampleCost', 'ProfSampleCostCentre'
-                        ]
+      RuntimeProfiling: ['HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre']
     })(diagramMode);
     fetchEventData();
   }
