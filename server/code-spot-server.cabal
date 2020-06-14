@@ -14,6 +14,8 @@ executable code-spot-server
                   , FilterEvents
                   , EndPoint.SourceView
                   , EndPoint.EventLog
+                  , EndPoint.FileView
+                  , Data.List.Extra
 
   default-language: Haskell2010
   build-depends:    base

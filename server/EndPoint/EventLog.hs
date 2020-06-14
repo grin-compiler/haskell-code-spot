@@ -2,18 +2,18 @@
 module EndPoint.EventLog (endpoints) where
 
 import Web.Scotty
+import Control.Monad.IO.Class
+import Data.Aeson (FromJSON(..), withObject, (.:), (.:?), object, (.=))
+import Data.List.Extra
+import EventlogJSON
+import FilterEvents
 
 import qualified Data.Text.Lazy as LText
-import Control.Monad.IO.Class
-
-import Data.Aeson (FromJSON(..), withObject, (.:), (.:?), object, (.=))
 import qualified Data.Aeson as Aeson
 import qualified Data.ByteString.Char8 as BS8
 import qualified Data.ByteString.Base64 as Base64
 import qualified GHC.RTS.Events as GHC
 
-import EventlogJSON
-import FilterEvents
 
 data EventLog = EventLog
   { eventLogPath    :: FilePath
@@ -27,7 +27,7 @@ instance FromJSON EventLog where
         <$> v .: "path"
         <*> v .:? "offset"
         <*> v .:? "idx"
-        <*> (fmap (mkEventFilters =<<) (v .:? "event-type")) -- Empty event-type list is converted to Nothing
+        <*> (fmap (nonEmpty =<<) (v .:? "event-type")) -- Empty event-type list is converted to Nothing
 
 endpoints = post "/eventlog" $ do
   d@EventLog{..} <- jsonData

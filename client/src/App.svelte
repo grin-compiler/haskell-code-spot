@@ -1,11 +1,11 @@
 <script>
-  import { onMount }    from 'svelte';
-  import HeapSize       from './HeapSize.svelte';
-  import HeapLive       from './HeapLive.svelte';
-  import HeapAllocated  from './HeapAllocated.svelte';
-  import ActiveThreads  from './ActiveThreads.svelte';
-  import * as d3 from 'd3';
-
+  import { postData }     from './post-data.js';
+  import { onMount }      from 'svelte';
+  import HeapSize         from './HeapSize.svelte';
+  import HeapLive         from './HeapLive.svelte';
+  import HeapAllocated    from './HeapAllocated.svelte';
+  import ActiveThreads    from './ActiveThreads.svelte';
+  import RuntimeProfiling from './RuntimeProfiling.svelte'
 
   let response;
   let restResponse = '';
@@ -41,20 +41,11 @@
   //   };
   // }
 
-  async function postData(url = '', data = {}) {
-    const response = await fetch(url, {
-      method: 'POST',
-      cache: 'no-cache',
-      body: JSON.stringify(data)
-    });
-    return response.json();
-  }
-
   async function fetchEventData() {
     let data = await postData('http://localhost:3000/eventlog',{
       path: eventlogFilepath,
       offset: eventlogOffset,
-      idx: eventlogIndex,
+//      idx: eventlogIndex,
       'event-type': eventKinds
     });
     restResponse = "<h3> got eventlog json, check console </h3>";
@@ -62,7 +53,7 @@
     eventlog = data;
   }
 
-  let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads']
+  let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads', 'RuntimeProfiling'];
   let diagramMode = 'HeapSize';
   const diagramModeElim = cases => d => {
     return cases[diagramMode];
@@ -72,16 +63,21 @@
     { id: 1, text: 'Heap Size', value: 'HeapSize' },
     { id: 2, text: 'Heap Live', value: 'HeapLive' },
     { id: 3, text: 'Heap Allocated', value: 'HeapAllocated' },
-    { id: 4, text: 'Active Threads', value: 'ActiveThreads' }
+    { id: 4, text: 'Active Threads', value: 'ActiveThreads' },
+    { id: 5, text: 'Run time profiling', value: 'RuntimeProfiling' }
   ];
   let diagramSelected;
   function handleDiagramSubmit() {
     diagramMode = diagramSelected.value;
     eventKinds = diagramModeElim({
-      HeapSize: ['HeapSize'],
-      HeapLive: ['HeapLive'],
-      HeapAllocated: ['HeapAllocated'],
-      ActiveThreads: ['RunThread', 'StopThread']
+      HeapSize:         ['HeapSize'],
+      HeapLive:         ['HeapLive'],
+      HeapAllocated:    ['HeapAllocated'],
+      ActiveThreads:    ['RunThread', 'StopThread'],
+      RuntimeProfiling: ['HeapProfCostCentre','HeapProfBegin', 'HeapProfSampleBegin'
+                        ,'HeapProfSampleEnd','HeapBioProfSampleBegin','HeapProfSampleCostCentre'
+                        ,'HeapProfSampleString', 'HeapProfSampleCost', 'ProfSampleCostCentre'
+                        ]
     })(diagramMode);
     fetchEventData();
   }
@@ -152,4 +148,6 @@
 <HeapAllocated eventlogData={eventlog}/>
 {:else if diagramMode == 'ActiveThreads'}
 <ActiveThreads eventlogData={eventlog}/>
+{:else if diagramMode == 'RuntimeProfiling'}
+<RuntimeProfiling eventlogData={eventlog}/>
 {/if}

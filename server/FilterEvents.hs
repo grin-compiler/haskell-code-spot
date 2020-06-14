@@ -17,10 +17,6 @@ matchEvent en e = case take 1 $ words $ show $ evSpec e of
   [n] | LText.pack n `elem` en -> Just e
   _                            -> Nothing
 
-mkEventFilters :: [EventName] -> Maybe [EventName]
-mkEventFilters [] = Nothing
-mkEventFilters xs = Just xs
-
 -- | Return 'Just eventNames' for the filter to keep. Otherwise Nothing.
 eventFilters :: ActionM (Maybe [EventName])
 eventFilters

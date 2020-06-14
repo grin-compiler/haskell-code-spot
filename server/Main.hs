@@ -25,6 +25,7 @@ import EventlogJSON
 import FilterEvents
 import qualified EndPoint.SourceView  as SourceView
 import qualified EndPoint.EventLog    as EventLog
+import qualified EndPoint.FileView    as FileView
 
 port = 3000
 
@@ -43,6 +44,7 @@ httpApp = scottyApp $ do
   middleware simpleCors
   EventLog.endpoints
   SourceView.endpoints
+  FileView.endpoints
   notFound notFoundA
 
 notFoundA :: ActionM ()
