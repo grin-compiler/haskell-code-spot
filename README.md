@@ -23,7 +23,7 @@ In one terminal:
 
 In another terminal:
 
-    $ cd src && npm install && npm run dev
+    $ cd client/src && npm install && npm run dev
 
 Now open [http://localhost:5000/](http://localhost:5000/) in your browser!
 
