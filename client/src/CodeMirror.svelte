@@ -36,6 +36,10 @@
   // because it's difficult to update an editor
   // without resetting scroll otherwise
 
+  export function getEditor() {
+    return editor;
+  }
+
   export async function set(new_value, new_mode=mode, new_theme=theme) {
     if (new_mode !== mode || new_theme !== theme) {
       await createEditor((mode = new_mode), (theme = new_theme));
@@ -46,7 +50,6 @@
     if (editor) editor.setValue(value);
     updating_externally = false;
   }
-
 
   export function update(new_value) {
     value = new_value;
