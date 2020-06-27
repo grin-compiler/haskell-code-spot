@@ -24,7 +24,7 @@
   };
 
 </script>
-
+<!--
 <div>
   <label for="myfile">ghc_stgapp file path:</label>
   <input type="text" name="myfile" bind:value={filepath}>
@@ -32,6 +32,6 @@
 
   <button on:click={stgappTest}>test ghc_stgapp</button>
 </div>
-
+-->
 <CodeMirror bind:this={cm1} />
 <button on:click={btn}>change value</button>
