@@ -1,17 +1,5 @@
-<script context="module">
-  // GLOBAL SETUP
-
-  const is_browser = typeof window !== "undefined";
-
-  import CodeMirror from "svelte-codemirror";
-
-  if (is_browser) {
-    import('codemirror/mode/haskell/haskell');
-  }
-</script>
-
 <script>
-  import * as d3 from 'd3';
+  import CodeMirror from "./CodeMirror.svelte";
 
   async function postData(url = '', data = {}) {
     const response = await fetch(url, {
@@ -32,7 +20,7 @@
   let cm1;
 
   const btn = () => {
-    cm1.set('let f import = () => {} data MyData = T | F :: Int', 'haskell', 'cobalt');
+    cm1.set('let f import = () => {} data MyData = T | F :: Int');
   };
 
 </script>
@@ -46,6 +34,4 @@
 </div>
 
 <CodeMirror bind:this={cm1} />
-
-
 <button on:click={btn}>change value</button>

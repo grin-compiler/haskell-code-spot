@@ -6,6 +6,7 @@
   import HeapAllocated    from './HeapAllocated.svelte';
   import ActiveThreads    from './ActiveThreads.svelte';
   import RuntimeProfiling from './RuntimeProfiling.svelte'
+  import SourceView       from './SourceView.svelte';
 
   let response;
   let restResponse = '';
@@ -148,3 +149,5 @@
 {:else if diagramMode == 'RuntimeProfiling'}
 <RuntimeProfiling eventlogData={eventlog}/>
 {/if}
+
+<SourceView/>
