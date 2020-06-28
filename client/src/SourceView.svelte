@@ -113,7 +113,7 @@ data PrimOp
     //console.log(cm1.getEditor().getViewport());
     //cm1.getEditor().scrollIntoView({line:10, ch:1});
     //cm1.getEditor().getDoc().setCursor(44);
-    cm1.getEditor().getDoc().setSelection({line:51, ch:0},{line:63, ch:0});
+    cm1.getEditor().getDoc().setSelection({line:19, ch:0},{line:28, ch:0});
     //cm1.getEditor().scrollIntoView({line:111, ch:1});
     //cm1.getEditor().getDoc().markText({line:51, ch:0},{line:63, ch:0}, {css: "background-color: #f00e0350"});
     //console.log(cm1.getEditor().getViewport());

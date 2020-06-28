@@ -159,7 +159,21 @@
   let w;
   let h;
   let mode;
-  let theme = "cobalt";
+  //let theme = "cobalt";
+  //let theme = "default";
+  //let theme = "monokai";
+  //let theme = "paraiso-dark";
+  //let theme = "3024-night";
+  //let theme = "base16-dark";
+  //let theme = "bespin";
+  
+  //let theme = "lucario";
+  let theme = "material";
+  //let theme = "material-darker";
+  //let theme = "material-palenight";
+  //let theme = "midnight";
+  
+  
 
   const modes = {
     js: {
