@@ -5,7 +5,7 @@ Visual tool to spot odd runtime behaviour of Haskell programs.
 
 ### Learn these for coding
 
-- HTML + CSS + JS
+- HTML + CSS + JS *(https://www.youtube.com/kepowob/featured)*
 - Svelte *(https://svelte.dev/tutorial/basics)*
 - D3.js *(https://www.youtube.com/watch?v=_8V5o2UHG0E)*
 - D3 flame graph *(https://github.com/spiermar/d3-flame-graph)*
