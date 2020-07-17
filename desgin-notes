@@ -1,3 +1,22 @@
 - do not keep data in the memory
 - parse eventlog every time
 
+http://www.brendangregg.com/flamegraphs.html
+https://github.com/spiermar/d3-flame-graph
+
+related project:
+  VisualVM
+  https://visualvm.github.io/
+  https://www.youtube.com/results?search_query=visualvm
+
+  Java Flight Recorder (JFR) is a tool for collecting diagnostic and profiling data about a running Java application.
+  https://docs.oracle.com/javacomponents/jmc-5-4/jfr-runtime-guide/about.htm#JFRUH170
+
+  YourKit (Java Profiler) ; propriatery (better) alternative to VisualVM
+  https://www.yourkit.com/java/profiler/features/
+
+  Windows Performance Analyzer
+  https://docs.microsoft.com/en-us/windows-hardware/design/device-experiences/using-windows-performance-analyzer-to-analyze-modern-standby-issues
+
+extensible .hi files:
+  https://github.com/input-output-hk/tools/pull/8

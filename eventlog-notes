@@ -1,0 +1,12 @@
+QUESTIONS:
+  Q: why does the cost centre stack refer to an unknown cost centre id?
+      is this an RTS bug or is it the javascript?
+      investigate in haskell to rule out type conversion issues
+  A: open issue/bug
+      https://gitlab.haskell.org/ghc/ghc/-/issues/17948
+      https://gitlab.haskell.org/ghc/ghc/-/issues/18043
+      https://gitlab.haskell.org/ghc/ghc/-/issues/17271
+      https://gitlab.haskell.org/ghc/ghc/-/issues/17059
+
+TO LEARN:
+  understand how CPU and Memory usage is connected to the cost centres
