@@ -249,7 +249,7 @@
 </nav>
 
 <div on:keydown={handleKeypress} tabindex=0>
-<div style="height:21vh; width:100%; padding: 0; margin:0; position:sticky; top:0; z-index:100; background-color: white;">
+<div style="height:21vmin; width:100%; padding: 0; margin:0; position:sticky; top:0; z-index:100; background-color: white;">
   <HeapLive {eventlogData} bind:currentStackIndex={sampleIndex} timeMarker={currentStack && currentStack.evTime} width="100%" height="100%"/>
 </div>
 
