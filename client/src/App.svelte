@@ -88,12 +88,12 @@
 <style>
 
   :global(html) {
-    font-size: 75%;
     font-size: 12px;
   }
 
-  :global(rect) {
-    fill: steelblue
+  :global(text.chart-title) {
+    font-size: 1.7em;
+    font-family: sans-serif;
   }
 
   :global(.line-path) {
@@ -108,16 +108,6 @@
     stroke: steelblue;
     stroke-width: 2;
     stroke-linejoin: round;
-  }
-
-  :global(circle) {
-    fill: steelblue;
-    opacity: 0.1;
-  }
-
-  :global(text) {
-    font-size: 1.7em;
-    font-family: sans-serif;
   }
 
   :global(.tick text) {

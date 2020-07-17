@@ -44,6 +44,7 @@
 
     g.selectAll('rect').data(data)
         .enter().append('rect')
+          .style('stroke', 'steelblue')
           .attr('y', d => yScale(yValue(d)))
           .attr('width', d => xScale(xValue(d)))
           .attr('height', d => 0.1);
@@ -52,6 +53,7 @@
       .attr('x', innerWidth / 2)
       .attr('y', -10)
       .attr('text-anchor', 'middle')
+      .attr('class', 'chart-title')
       .text('Heap Size');
   };
 
@@ -111,6 +113,7 @@
       .attr('x', innerWidth / 2)
       .attr('y', -10)
       .attr('text-anchor', 'middle')
+      .attr('class', 'chart-title')
       .text('Heap Size');
   };
 

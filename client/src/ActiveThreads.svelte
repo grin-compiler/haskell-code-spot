@@ -76,6 +76,7 @@
       .attr('x', innerWidth / 2)
       .attr('y', -10)
       .attr('text-anchor', 'middle')
+      .attr('class', 'chart-title')
       .text('Number of active threads');
 
   };
