@@ -8,9 +8,6 @@ import Data.Aeson (ToJSON(..), FromJSON(..), withObject, (.:), (.:?), object, (.
 
 import qualified Data.Text.Lazy as LText
 import qualified Data.Aeson as Aeson
-import qualified Data.ByteString.Char8 as BS8
-import qualified Data.ByteString.Base64 as Base64
-import qualified GHC.RTS.Events as GHC
 
 
 data FileView = FileView

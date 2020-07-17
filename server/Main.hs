@@ -26,6 +26,7 @@ import FilterEvents
 import qualified EndPoint.SourceView  as SourceView
 import qualified EndPoint.EventLog    as EventLog
 import qualified EndPoint.FileView    as FileView
+import qualified EndPoint.ExtStg      as ExtStg
 
 port = 3000
 
@@ -45,6 +46,7 @@ httpApp = scottyApp $ do
   EventLog.endpoints
   SourceView.endpoints
   FileView.endpoints
+  ExtStg.endpoints
   notFound notFoundA
 
 notFoundA :: ActionM ()
