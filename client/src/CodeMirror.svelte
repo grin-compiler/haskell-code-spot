@@ -8,8 +8,9 @@
 
   const dispatch = createEventDispatcher();
 
+  export let firstLineNumber = 1;
   export let value = "";
-  export let readonly = false;
+  export let readonly = 'nocursor';
   export let errorLoc = null;
   // export let flex = false;
   export let lineNumbers  = true;
@@ -40,6 +41,13 @@
     return editor;
   }
 
+  export async function slice(src, lineStart, lineEnd) {
+    await set(src.split('\n').slice(lineStart-1, lineEnd).join('\n'));
+    if (editor) {
+      editor.setOption('firstLineNumber', lineStart);
+    }
+  }
+
   export async function set(new_value, new_mode=mode, new_theme=theme) {
     if (new_mode !== mode || new_theme !== theme) {
       await createEditor((mode = new_mode), (theme = new_theme));
@@ -47,7 +55,10 @@
 
     value = new_value;
     updating_externally = true;
-    if (editor) editor.setValue(value);
+    if (editor) {
+      editor.setOption('firstLineNumber', 1);
+      editor.setValue(value);
+    }
     updating_externally = false;
   }
 
@@ -160,20 +171,26 @@
   let h;
   let mode;
   //let theme = "cobalt";
-  //let theme = "default";
+
+  let theme = "default"; // working well!
+
   //let theme = "monokai";
+  //let theme = "paraiso-light";
   //let theme = "paraiso-dark";
   //let theme = "3024-night";
   //let theme = "base16-dark";
+  //let theme = "base16-light";
   //let theme = "bespin";
-  
+
   //let theme = "lucario";
-  let theme = "material";
+
+  //let theme = "material";
+
   //let theme = "material-darker";
   //let theme = "material-palenight";
   //let theme = "midnight";
-  
-  
+
+
 
   const modes = {
     js: {
@@ -256,7 +273,10 @@
     if (_CodeMirror) {
       CodeMirror = _CodeMirror;
       createEditor(mode || "haskell", theme).then(() => {
-        if (editor) editor.setValue(value || "");
+        if (editor) {
+          //editor.setOption('firstLineNumber', firstLineNumber || 1);
+          editor.setValue(value || "");
+        }
       });
     } else {
       alert("Error in codemirror import!");
@@ -279,6 +299,7 @@
 
     const opts = {
       lineNumbers,
+      firstLineNumber: firstLineNumber,
       lineWrapping: true,
       indentWithTabs: true,
       indentUnit: 2,
@@ -363,6 +384,9 @@
 
     editor = CodeMirror.fromTextArea(refs.editor, opts);
 
+    editor.setSize(null, 'auto');
+
+/*
     editor.on("change", (instance, changeObj) => {
       if (!updating_externally) {
         // const value = instance.getValue();
@@ -380,13 +404,13 @@
       if (!updating_externally) {
         dispatch("blur", { event });
       }
-    });    
+    });
 
     editor.on("refresh", (instance, event) => {
       if (!updating_externally) {
         dispatch("refresh", { event });
       }
-    }); 
+    });
 
     editor.on("gutterClick", (instance, line, gutter, clickEvent) => {
       if (!updating_externally) {
@@ -399,7 +423,7 @@
         dispatch("viewportChange", { from, to });
       }
     });
-
+*/
     if (first) await sleep(50);
     editor.refresh();
 

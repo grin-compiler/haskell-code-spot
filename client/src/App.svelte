@@ -6,11 +6,11 @@
   import HeapAllocated    from './HeapAllocated.svelte';
   import ActiveThreads    from './ActiveThreads.svelte';
   import RuntimeProfiling from './RuntimeProfiling.svelte'
-  import SourceView       from './SourceView.svelte';
+  import CostCentreStack  from './CostCentreStack.svelte';
 
   let response;
   let restResponse = '';
-  let eventlogFilepath = '../data/grin.eventlog';
+  let eventlogFilepath = '/home/csaba/haskell/grin-compiler/ghc-wpc-sample-programs/game-logic-experiment/.stack-work/dist/x86_64-linux/Cabal-3.2.0.0/build/minigame/minigame.eventlog';
   let eventlogOffset = 0;
   let eventlogIndex = 100000;
   let eventKinds = [];
@@ -54,8 +54,8 @@
     eventlog = data;
   }
 
-  let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads', 'RuntimeProfiling'];
-  let diagramMode = 'HeapSize';
+  let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads', 'RuntimeProfiling', 'CostCentreStack'];
+  let diagramMode = 'CostCentreStack';
   const diagramModeElim = cases => d => {
     return cases[diagramMode];
   }
@@ -65,9 +65,11 @@
     { id: 2, text: 'Heap Live', value: 'HeapLive' },
     { id: 3, text: 'Heap Allocated', value: 'HeapAllocated' },
     { id: 4, text: 'Active Threads', value: 'ActiveThreads' },
-    { id: 5, text: 'Runtime profiling', value: 'RuntimeProfiling' }
+    { id: 5, text: 'Runtime profiling', value: 'RuntimeProfiling' },
+    { id: 6, text: 'Cost Centre Stack', value: 'CostCentreStack' }
   ];
   let diagramSelected;
+
   function handleDiagramSubmit() {
     diagramMode = diagramSelected.value;
     eventKinds = diagramModeElim({
@@ -75,13 +77,21 @@
       HeapLive:         ['HeapLive'],
       HeapAllocated:    ['HeapAllocated'],
       ActiveThreads:    ['RunThread', 'StopThread'],
-      RuntimeProfiling: ['HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre']
+      RuntimeProfiling: ['HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre'],
+      CostCentreStack:  ['HeapLive', 'HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre']
     })(diagramMode);
     fetchEventData();
   }
+
 </script>
 
 <style>
+
+  :global(html) {
+    font-size: 75%;
+    font-size: 12px;
+  }
+
   :global(rect) {
     fill: steelblue
   }
@@ -106,12 +116,12 @@
   }
 
   :global(text) {
-    font-size: 2em;
+    font-size: 1.7em;
     font-family: sans-serif;
   }
 
   :global(.tick text) {
-    font-size: 1.7em;
+    font-size: 1.2em;
     font-family: sans-serif;
     fill: #635F5D;
   }
@@ -119,24 +129,50 @@
   :global(.tick line) {
     stroke: #C0C0BB;
   }
+
+  .my-nav {
+    width: 100%;
+    height: auto;
+
+    display: flex;
+    align-items: center;
+
+
+    background: #5f5286;
+    color: white;
+  }
+
+  .my-nav > * {
+    margin: 0.5em;
+  }
+
+  .my-title {
+
+    padding: 0.1em 0.3em;
+    margin: 0;
+
+  }
+
 </style>
+<nav class="my-nav">
 
-<div>
-  <label for="myfile">Eventlog file path:</label>
-  <input type="text" name="myfile" bind:value={eventlogFilepath}>
-  <p>{eventlogFilepath}</p>
+<h3 class="my-title">
+Haskell Code Spot
+</h3>
+
+      <select bind:value={diagramSelected} on:change="{ () => handleDiagramSubmit(diagramSelected) }">
+      {#each diagramOptions as diagramOption}
+        <option value={diagramOption} selected={diagramMode === diagramOption.value}>
+          {diagramOption.text}
+        </option>
+      {/each}
+    </select>
+
+  <label for="myfile">Eventlog file:</label>
+  <input type="text" name="myfile" bind:value={eventlogFilepath} title={eventlogFilepath} style="flex-grow:1;">
   <button on:click={fetchEventData}>Fetch Event Data</button>
-</div>
 
-<form on:change="{ () => handleDiagramSubmit(diagramSelected) }">
-  <select bind:value={diagramSelected}>
-    {#each diagramOptions as diagramOption}
-      <option value={diagramOption}>
-        {diagramOption.text}
-      </option>
-    {/each}
-  </select>
-</form>
+</nav>
 
 {#if diagramMode == 'HeapSize'}
 <HeapSize eventlogData={eventlog}/>
@@ -148,6 +184,6 @@
 <ActiveThreads eventlogData={eventlog}/>
 {:else if diagramMode == 'RuntimeProfiling'}
 <RuntimeProfiling eventlogData={eventlog}/>
+{:else if diagramMode == 'CostCentreStack'}
+<CostCentreStack eventlogData={eventlog}/>
 {/if}
-
-<SourceView/>
