@@ -9,7 +9,7 @@
 
   let ghcStgApp = '/home/csaba/haskell/grin-compiler/ghc-wpc-sample-programs/game-logic-experiment/.stack-work/dist/x86_64-linux/Cabal-3.2.0.0/build/minigame/minigame.ghc_stgapp';
   //let ghcStgApp = '';
-  let moduleMap = {};
+  let moduleMap;
   let stackModuleSource = {};
 
   const errorCostCentre = {
@@ -43,7 +43,7 @@
     // load stack module sources
     let oldModuleSource = stackModuleSource;
     stackModuleSource = {}
-    if (ghcStgApp) {
+    if (moduleMap) {
       currentStackData.forEach(d => stackModuleSource[d.evSpec.heapProfModule] = null);
       for (let moduleName in stackModuleSource) {
         if (moduleName in oldModuleSource && oldModuleSource[moduleName]) {
@@ -168,12 +168,9 @@
     dataCCS.forEach(d => costCentreMap[d.evSpec.heapProfCostCentreId] = d);
     //console.log('costCentreMap', costCentreMap);
 
-    if (ghcStgApp) {
-      postData('http://localhost:3000/ext-stg/get-module-mapping', { ghcStgAppPath: ghcStgApp}).then(d => {moduleMap = d; calculateCurrentStack();});
-    } else {
-      moduleMap = {};
-      calculateCurrentStack();
-    }
+    postData('http://localhost:3000/ext-stg/get-module-mapping', {ghcStgAppPath: ghcStgApp})
+      .then(d => {moduleMap = d;}, _ => {moduleMap = null;})
+      .finally(calculateCurrentStack);
   }
 
   const colorScheme = d3.schemeDark2;//d3.schemeTableau10;
