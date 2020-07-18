@@ -78,7 +78,7 @@
       HeapAllocated:    ['HeapAllocated'],
       ActiveThreads:    ['RunThread', 'StopThread'],
       RuntimeProfiling: ['HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre'],
-      CostCentreStack:  ['HeapLive', 'HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre']
+      CostCentreStack:  ['HeapSize', 'HeapLive', 'HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre']
     })(diagramMode);
     fetchEventData();
   }
