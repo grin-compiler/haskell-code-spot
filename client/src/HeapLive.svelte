@@ -18,6 +18,7 @@
     }
 
     const data = dataAll.filter(e => e.evSpec.tag === 'HeapLive');
+    const dataHeapSize = dataAll.filter(e => e.evSpec.tag === 'HeapSize');
 
     const svg     = d3.select(el3);
     const svgRect = svg.node().getBoundingClientRect();
@@ -26,9 +27,9 @@
     const width   = svgRect.width;
     const height  = svgRect.height;
 
-    const yValue = d => d.evSpec.liveBytes;
+    const yValue = d => d.evSpec.liveBytes || d.evSpec.sizeBytes;
     xValue = d => d.evTime/1000000000;
-    const margin = { top: 35, right: 10, bottom: 25, left:50 };
+    const margin = { top: 40, right: 10, bottom: 25, left:50 };
     const innerWidth  = width - margin.left - margin.right;
     innerHeight = height - margin.top - margin.bottom;
 
@@ -38,18 +39,30 @@
       .range([0, innerWidth]);
 
     const yScale = d3.scaleLinear()
-      .domain([0, d3.max(data, yValue)])
+      .domain([0, d3.max([d3.max(data, yValue), d3.max(dataHeapSize, yValue)])])
       .range([innerHeight, 0]);
 
     g = svg.append('g')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
     // title
-    g.append('text')
+    const title = g.append('text')
       .attr('x', innerWidth / 2)
-      .attr('y', -11)
+      .attr('y', -15)
       .attr('text-anchor', 'middle')
-      .attr('class', 'chart-title')
+      //.attr('class', 'chart-title')
+      .attr('font-size', '1.5em');
+    title.append('tspan')
+      .style('fill', 'blue')
+      .style('stroke', 'none')
+      .text('Cost Centre Stack, ');
+    title.append('tspan')
+      .style('fill', 'orchid')
+      .style('stroke', 'none')
+      .text('Heap Size, ');
+    title.append('tspan')
+      .style('fill', 'red')
+      .style('stroke', 'none')
       .text('Heap Live');
 
     const xAxis = d3.axisBottom(xScale)
@@ -69,7 +82,8 @@
     const lineGenerator = d3.line()
       .x(d => xScale(xValue(d)))
       .y(d => yScale(yValue(d)))
-      .curve(d3.curveBasis);
+//      .curve(d3.curveStepAfter);
+      .curve(d3.curveMonotoneX);
 
     const gPlot = g.append('g');
 
@@ -77,24 +91,52 @@
     gPlot.append('g')
       .attr('class', 'time-marker');
 
+    // live heap plot
     gPlot.append('path')
       .attr('class', 'line-path')
+      .style('stroke', 'red')
       .datum(data)
       .attr('d', lineGenerator);
 
+    gPlot.selectAll('plot.circle').data(data)
+        .enter().append('circle')
+          .attr('class', 'plot')
+          .style('stroke', 'red')
+          .style('fill', 'red')
+          .attr('cy', d => yScale(yValue(d)))
+          .attr('cx', d => xScale(xValue(d)))
+          .attr('r',  d => 2);
+
+    // heap size plot
+    gPlot.append('path')
+      .attr('class', 'line-path')
+      .style('stroke', 'orchid')
+      .datum(dataHeapSize)
+      .attr('d', lineGenerator);
+
+    gPlot.selectAll('plot.circle').data(dataHeapSize)
+        .enter().append('circle')
+          .attr('class', 'plot')
+          .style('stroke', 'orchid')
+          .style('fill', 'orchid')
+          .attr('cy', d => yScale(yValue(d)))
+          .attr('cx', d => xScale(xValue(d)))
+          .attr('r',  d => 2);
+
     // show call stack event times
     const dataStack = dataAll.filter(e => e.evSpec.tag === 'ProfSampleCostCentre' || e.evSpec.tag === 'HeapProfSampleCostCentre');
-    gPlot.selectAll('circle').data(dataStack)
+    gPlot.selectAll('ccs.circle').data(dataStack)
         .enter().append('circle')
+          .attr('class', 'ccs')
           .style('stroke', 'blue')
           .style('fill', 'blue')
           .style('fill-opacity',  0.2)
           .style('stroke-opacity', 0.5)
           .style('stroke-width',  1)
-          .attr('cy', d => -4)
+          .attr('cy', d => -6)
           .attr('cx', d => xScale(xValue(d)))
           .attr('r',  d => 2);
-;
+
 
     // show GC event times
     const dataGC = dataAll.filter(
@@ -191,7 +233,7 @@
           .attr('y2', d => innerHeight)
           .attr('x2', d => xScale(xValue(d)));
       gPlot
-        .select('.line-path')
+        .selectAll('.line-path')
         .transition().duration(1000)
         .attr('d', lineGenerator);
 
