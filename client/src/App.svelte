@@ -55,14 +55,14 @@
   }
 
   let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads', 'RuntimeProfiling', 'CostCentreStack'];
-  let diagramMode = 'CostCentreStack';
+  let diagramMode = 'HeapLive';
   const diagramModeElim = cases => d => {
     return cases[diagramMode];
   }
 
   let diagramOptions = [
     { id: 1, text: 'Heap Size', value: 'HeapSize' },
-    { id: 2, text: 'Heap Live', value: 'HeapLive' },
+    { id: 2, text: 'Heap Live Chart Zoo', value: 'HeapLive' },
     { id: 3, text: 'Heap Allocated', value: 'HeapAllocated' },
     { id: 4, text: 'Active Threads', value: 'ActiveThreads' },
     { id: 5, text: 'Runtime profiling', value: 'RuntimeProfiling' },
@@ -74,11 +74,11 @@
     diagramMode = diagramSelected.value;
     eventKinds = diagramModeElim({
       HeapSize:         ['HeapSize'],
-      HeapLive:         ['HeapLive'],
+      HeapLive:         ['HeapLive', 'HeapSize'],
       HeapAllocated:    ['HeapAllocated'],
       ActiveThreads:    ['RunThread', 'StopThread'],
       RuntimeProfiling: ['HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre'],
-      CostCentreStack:  ['HeapSize', 'HeapLive', 'HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre']
+      CostCentreStack:  ['HeapSize', 'HeapLive', 'HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre', 'GCWork']
     })(diagramMode);
     fetchEventData();
   }
