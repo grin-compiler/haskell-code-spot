@@ -9,6 +9,7 @@ Visual tool to spot odd runtime behaviour of Haskell programs.
 - Svelte *(https://svelte.dev/tutorial/basics)*
 - D3.js *(https://www.youtube.com/watch?v=_8V5o2UHG0E)*
 - D3 flame graph *(https://github.com/spiermar/d3-flame-graph)*
+- C3.js *(https://c3js.org/)*
 - CodeMirror *(https://codemirror.net/doc/manual.html#api)*
 - Scotty *(https://hackage.haskell.org/package/scotty)*
 - GHC RTS design *(https://takenobu-hs.github.io/downloads/haskell_ghc_illustrated.pdf)*
