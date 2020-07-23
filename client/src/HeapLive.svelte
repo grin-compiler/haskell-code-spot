@@ -100,6 +100,9 @@
       },
       */
       grid: {
+        x: {
+          show: true
+        },
         y: {
           show: true
         }

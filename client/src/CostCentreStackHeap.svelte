@@ -9,7 +9,7 @@
   export let currentStackIndex;
 
   let el3;
-  let xValue, xScale, innerHeight, g;
+  let xValue, xScale, xAxis, innerHeight, g;
 
   const render3 = dataAll => {
 
@@ -65,13 +65,14 @@
       .style('stroke', 'none')
       .text('Heap Live');
 
-    const xAxis = d3.axisBottom(xScale)
+    xAxis = d3.axisBottom(xScale)
+      .tickFormat(d => {return d3.format('.12~s')(d) + 's';})
       .tickPadding(3);
 //      .tickSize(-innerHeight);
 
     const yAxis = d3.axisLeft(yScale)
       .ticks(5)
-      .tickFormat(d3.format('.3s'))
+      .tickFormat(d => {return d3.format('.3s')(d).toUpperCase() + 'B';})
       .tickPadding(5)
       .tickSize(-innerWidth);
 
@@ -218,7 +219,7 @@
       }
 
       // Update axis and circle position
-      gAxisX.transition().duration(1000).call(d3.axisBottom(xScale));
+      gAxisX.transition().duration(1000).call(xAxis);
 
       gPlot
         .selectAll("circle")
