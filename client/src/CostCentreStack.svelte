@@ -136,6 +136,12 @@
     sourceBoxMap[i] = node;
     observer.observe(node);
   }
+
+  // scrolling and jumping
+  function jumpToSourceBox(e) {
+    const idx = e.target.dataset.boxIndex;
+    sourceBoxMap[idx].scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  }
 </script>
 
 <nav class="my-nav">
@@ -159,8 +165,9 @@
     {#each currentStackData as cc, i}
       <div class="list-group-item text-light"
            style="word-wrap:break-word; margin: 0.0em; background-image: linear-gradient(#5f5286, #453b61)"
-           use:registerNameBox={i}
            data-box-index={i}
+           use:registerNameBox={i}
+           on:click={jumpToSourceBox}
       >
 
         <span style="color: lightgrey;">{cc.evSpec.heapProfModule}</span>
