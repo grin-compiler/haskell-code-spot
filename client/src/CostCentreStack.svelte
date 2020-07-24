@@ -2,7 +2,6 @@
   import * as d3 from 'd3';
   import { postData } from './post-data.js';
   import { onMount } from 'svelte';
-  import CodeMirror from "./CodeMirror.svelte";
   import CostCentreStackHeap from './CostCentreStackHeap.svelte';
   import SourceRangeBox from './SourceRangeBox.svelte';
 
@@ -57,60 +56,6 @@
     }
   }
 
-  const re1 = /.*:(?<line>\d+):(?<column>\d+)$/;
-  const re2 = /.*:(?<line>\d+):(?<start_column>\d+)-(?<end_column>\d+)$/;
-  const re3 = /.*:\((?<start_line>\d+),(?<start_column>\d+)\)-\((?<end_line>\d+),(?<end_column>\d+)\)$/;
-/*
-
-    isPointRealSpan
-      path:line:column
-      /.*:(?<line>\d+):(?<column>\d+)$/
-
-    isOneLineRealSpan
-      path:line:start_column-end_column
-      /.*:(?<line>\d+):(?<start_column>\d+)-(?<end_column>\d+)$/
-
-    generic
-      path:(start_line,start_column)-(end_line,end_column)
-      /.*:\((?<start_line>\d+),(?<start_column>\d+)\)-\((?<end_line>\d+),(?<end_column>\d+)\)$/
-
-    EXAMPLE:
-      src3.match(re4).groups
-
-*/
-  function getSrcLocLine(srcLoc) {
-    let m;
-    if (m = srcLoc.match(re1)) {
-      // path:line:column
-      return +m.groups.line;
-    } else if (m = srcLoc.match(re2)) {
-      // path:line:start_column-end_column
-      return +m.groups.line;
-    } else if (m = srcLoc.match(re3)) {
-      // path:(start_line,start_column)-(end_line,end_column)
-      return +m.groups.start_line;
-    }
-
-    return 1;
-  }
-
-  function sliceToSrcLoc(sourceCode, srcLoc) {
-    const lines = sourceCode.split('\n');
-    let m;
-    if (m = srcLoc.match(re1)) {
-      // path:line:column
-      return lines.slice(+m.groups.line -1, +m.groups.line).join('\n');
-    } else if (m = srcLoc.match(re2)) {
-      // path:line:start_column-end_column
-      return lines.slice(+m.groups.line -1, +m.groups.line).join('\n');
-    } else if (m = srcLoc.match(re3)) {
-      // path:(start_line,start_column)-(end_line,end_column)
-      return lines.slice(+m.groups.start_line -1, +m.groups.end_line).join('\n');
-    }
-
-    return sourceCode;
-  }
-
   async function getSourceCodeForModule(moduleName) {
     if (moduleName in stackModuleSource) {
       const res = await stackModuleSource[moduleName];
@@ -119,20 +64,6 @@
     }
     return '<not found>';
   }
-
-/*
-  const btn = () => {
-    cm1.slice(src, 19, 29);
-    //console.log(cm1.getEditor().getViewport());
-    //cm1.getEditor().scrollIntoView({line:10, ch:1});
-    //cm1.getEditor().getDoc().setCursor(44);
-    //cm1.getEditor().getDoc().setSelection({line:19, ch:0},{line:28, ch:0});
-    //cm1.getEditor().scrollIntoView({line:111, ch:1});
-    //cm1.getEditor().getDoc().markText({line:51, ch:0},{line:63, ch:0}, {css: "background-color: #f00e0350"});
-    //console.log(cm1.getEditor().getViewport());
-    cm1.getEditor().setSize(null, 'auto');
-  };
-*/
 
   function handleKeypress(event) {
     console.log(event);
@@ -184,14 +115,6 @@
     if (currentStack) calculateCurrentStack();
   }
 
-  function bgImage2(i, ccid) {
-    //return 'linear-gradient(#8e508a, #8e508a)';
-    //return 'linear-gradient(#5f5286, #5f5286)';
-//    return 'linear-gradient(#8e508a, #5f5286)';
-    return 'linear-gradient(to right, #8e508a, #5f5286)';
-    return 'linear-gradient(to right, #5f5286, #8e508a)';
-  }
-
   function bgImage(i, ccid) {
     if (i < 4)
     //return 'linear-gradient(to right, #8e508a, #5f5286)';
@@ -199,47 +122,11 @@
 //    return 'linear-gradient(#8e508a, #453b61)';
 //    return 'linear-gradient(#5f5286, #8e508a)';
     return 'linear-gradient(#5f5286, #453b61)'; // super
-    
+
     return 'linear-gradient(#8e508a, #453b61)';
     return 'linear-gradient(#8e508a, #5f5286, #453b61)';
   }
 
-  function bgColor(i, ccid) {
-
-  //  if (i === 0)
-      return '#5f5286';
-      return '#453b61';
-
-      return '#8e508a';
-      //return 'darkgreen';
-
-
-
-    if (i % 2 === 0)
-      return 'orange';
-    return '#8e508a';
-    return '#453b61';
-    return '#5f5286';
-
-    /*
-      453b61
-      5f5286
-      8e508a
-    */
-    //return 'orange';
-    if (i % 2 === 0)
-      return 'dodgerblue';
-    return 'MediumSeaGreen';
-
-    if (i % 2 === 0)
-      return 'orange';
-    return 'slateblue';
-
-    if (i % 2 === 0)
-      return '#453b61';
-    return '#8e508a';
-    return '#5f5286';
-  }
 </script>
 
 <nav class="my-nav">
