@@ -48,7 +48,7 @@
   $: if (startLineNumber !== originalSourceSpan.startLineNumber || endLineNumber !== originalSourceSpan.endLineNumber) {
     selectionsArray = [
       { anchor: {line:originalSourceSpan.startLineNumber - startLineNumber, ch: originalSourceSpan.startColumn-1}
-      , head:   {line:originalSourceSpan.endLineNumber   - startLineNumber + 1, ch: originalSourceSpan.endColumn}
+      , head:   {line:originalSourceSpan.endLineNumber   - startLineNumber, ch: originalSourceSpan.endColumn}
       }]
   } else {
     selectionsArray = [];
