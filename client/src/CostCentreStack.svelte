@@ -115,18 +115,27 @@
     if (currentStack) calculateCurrentStack();
   }
 
-  function bgImage(i, ccid) {
-    if (i < 4)
-    //return 'linear-gradient(to right, #8e508a, #5f5286)';
-    return 'linear-gradient(#8e508a, #5f5286)';
-//    return 'linear-gradient(#8e508a, #453b61)';
-//    return 'linear-gradient(#5f5286, #8e508a)';
-    return 'linear-gradient(#5f5286, #453b61)'; // super
+  // highlight on screen source boxes
+  let sourceBoxMap = {};
+  let nameBoxMap = {};
 
-    return 'linear-gradient(#8e508a, #453b61)';
-    return 'linear-gradient(#8e508a, #5f5286, #453b61)';
+  const options = {};
+  const observer = new IntersectionObserver(function(entries, observer) {
+    entries.forEach(e => {
+      const idx = e.target.dataset.boxIndex;
+      nameBoxMap[idx].style.backgroundImage = e.isIntersecting ? 'linear-gradient(#8e508a, #5f5286)' : 'linear-gradient(#5f5286, #453b61)';
+    });
+  }, options);
+
+  function registerNameBox(node, i) {
+    nameBoxMap[i] = node;
+    node.style.backgroundImage = 'linear-gradient(#8e508a, #5f5286)';
+    node.style.backgroundImage = 'linear-gradient(#5f5286, #453b61)';
   }
-
+  function registerSourceBox(node, i) {
+    sourceBoxMap[i] = node;
+    observer.observe(node);
+  }
 </script>
 
 <nav class="my-nav">
@@ -143,27 +152,27 @@
 
 <div class="my-container">
   <div class="one">
-        <h4>
-          Cost Centre Stack
-        </h4>
+    <h4>
+      Cost Centre Stack
+    </h4>
 
-        {#each currentStackData as cc, i}
-          <div class="list-group-item text-light"
-               class:font-weight-bolder="{i === index}"
-               style="word-wrap:break-word;background-image: {bgImage(i, cc.evSpec.heapProfCostCentreId)}; margin: 0.0em;"
-          >
+    {#each currentStackData as cc, i}
+      <div class="list-group-item text-light"
+           style="word-wrap:break-word; margin: 0.0em; background-image: linear-gradient(#5f5286, #453b61)"
+           use:registerNameBox={i}
+           data-box-index={i}
+      >
 
-            <span style="color: lightgrey;">{cc.evSpec.heapProfModule}</span>
-            <br>
-            <span style="color: white;">{cc.evSpec.heapProfLabel}</span>
+        <span style="color: lightgrey;">{cc.evSpec.heapProfModule}</span>
+        <br>
+        <span style="color: white;">{cc.evSpec.heapProfLabel}</span>
 
-          </div>
-        {/each}
+      </div>
+    {/each}
 
-        <pre>
-        {JSON.stringify(currentStack || {}, null, ' ')}
-        </pre>
-
+    <pre>
+    {JSON.stringify(currentStack || {}, null, ' ')}
+    </pre>
   </div>
 
   <div class="two">
@@ -171,14 +180,16 @@
       {#await getSourceCodeForModule(cc.evSpec.heapProfModule)}
         <div class="spinner-border text-primary"></div>
       {:then sourceCode}
-        <SourceRangeBox
-          srcLocString={cc.evSpec.heapProfSrcLoc}
-          moduleName={cc.evSpec.heapProfModule}
-          functionLabel={cc.evSpec.heapProfLabel}
+        <div use:registerSourceBox={i} data-box-index={i}>
+          <SourceRangeBox
+            srcLocString={cc.evSpec.heapProfSrcLoc}
+            moduleName={cc.evSpec.heapProfModule}
+            functionLabel={cc.evSpec.heapProfLabel}
 
-          sourceCode={sourceCode}
-          packageName={moduleMap && moduleMap[cc.evSpec.heapProfModule] && moduleMap[cc.evSpec.heapProfModule].packageName || ''}
-        />
+            sourceCode={sourceCode}
+            packageName={moduleMap && moduleMap[cc.evSpec.heapProfModule] && moduleMap[cc.evSpec.heapProfModule].packageName || ''}
+          />
+        </div>
       {/await}
 
     {/each}
@@ -224,17 +235,6 @@
     display: flex;
     align-items: center;
 
-    //background: orangered;
-    //background: #5f5286;
-/*
-    return '#8e508a';
-    return '#453b61';
-    return '#5f5286';
-*/
-    background-image: linear-gradient(to right, #8e508a, #5f5286);
-    background-image: linear-gradient(to right, #5f5286, #8e508a); /* ok */
-    background-image: linear-gradient(to right, #453b61, #8e508a);
-    background-image: linear-gradient(#453b61, #8e508a);
     background-image: linear-gradient(#8e508a, #453b61);
     background: #5f5286;
     color: white;
