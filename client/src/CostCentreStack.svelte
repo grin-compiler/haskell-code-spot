@@ -1,9 +1,10 @@
 <script>
   import * as d3 from 'd3';
   import { postData } from './post-data.js';
+  import { onMount } from 'svelte';
   import CodeMirror from "./CodeMirror.svelte";
   import CostCentreStackHeap from './CostCentreStackHeap.svelte';
-  import { onMount } from 'svelte';
+  import SourceRangeBox from './SourceRangeBox.svelte';
 
   export let eventlogData;
 
@@ -260,11 +261,14 @@
         </h4>
 
         {#each currentStackData as cc, i}
-          <div class="list-group-item text-light" class:font-weight-bolder="{i === index}" style="word-wrap:break-word;background-image: {bgImage(i, cc.evSpec.heapProfCostCentreId)}; margin: 0.0em;">
+          <div class="list-group-item text-light"
+               class:font-weight-bolder="{i === index}"
+               style="word-wrap:break-word;background-image: {bgImage(i, cc.evSpec.heapProfCostCentreId)}; margin: 0.0em;"
+          >
 
-              <span style="color: lightgrey;">{cc.evSpec.heapProfModule}</span>
-              <br>
-              <span style="color: white;">{cc.evSpec.heapProfLabel}</span>
+            <span style="color: lightgrey;">{cc.evSpec.heapProfModule}</span>
+            <br>
+            <span style="color: white;">{cc.evSpec.heapProfLabel}</span>
 
           </div>
         {/each}
@@ -277,32 +281,19 @@
 
   <div class="two">
     {#each currentStackData as cc, i}
-      <div style="background-image: {bgImage2(0, cc.evSpec.heapProfCostCentreId)}; padding: 0.4em; margin: 0.1em 0">
-        <section>
-          <button class="btn btn-secondary"><span style="color:lightgrey;">{cc.evSpec.heapProfModule}.</span><span style="color:white;">{cc.evSpec.heapProfLabel}</span></button>
+      {#await getSourceCodeForModule(cc.evSpec.heapProfModule)}
+        <div class="spinner-border text-primary"></div>
+      {:then sourceCode}
+        <SourceRangeBox
+          srcLocString={cc.evSpec.heapProfSrcLoc}
+          moduleName={cc.evSpec.heapProfModule}
+          functionLabel={cc.evSpec.heapProfLabel}
 
-          {#if moduleMap && moduleMap[cc.evSpec.heapProfModule]}
-            <code class="my-right-note">
-              <span class="my-right-note">{moduleMap[cc.evSpec.heapProfModule].packageName}</span>
-              <br>
-              <span class="my-right-note">{cc.evSpec.heapProfSrcLoc}</span>
-            </code>
-          {:else}
-            <code style="float:right;font-size: 0.96em; color:lightgrey;padding: 0.5em; margin:0;">
-              {cc.evSpec.heapProfSrcLoc}
-            </code>
-          {/if}
+          sourceCode={sourceCode}
+          packageName={moduleMap && moduleMap[cc.evSpec.heapProfModule] && moduleMap[cc.evSpec.heapProfModule].packageName || ''}
+        />
+      {/await}
 
-          {#await getSourceCodeForModule(cc.evSpec.heapProfModule)}
-            <br>
-            <div class="spinner-border text-light"></div>
-          {:then sourceCode}
-            <button style="width:100%; margin: 0; padding: 0.1em 0.5em; border-radius: 0;border-radius: 3px 3px 0 0; text-align:right;">+5 lines</button>
-            <CodeMirror value={sliceToSrcLoc(sourceCode, cc.evSpec.heapProfSrcLoc)} firstLineNumber={getSrcLocLine(cc.evSpec.heapProfSrcLoc)}/>
-            <button style="width:100%; margin: 0; padding: 0.1em 0.5em;border-radius: 0;border-radius: 0 0 3px 3px; text-align:right;">+5 lines </button>
-          {/await}
-        </section>
-      </div>
     {/each}
   </div>
 </div>
@@ -366,11 +357,4 @@
     margin: 0.5em;
   }
 
-  .my-right-note {
-    float: right;
-    font-size: 0.96em;
-    color: lightgrey;
-    padding: 0 0.1em;
-    margin: 0;
-  }
 </style>

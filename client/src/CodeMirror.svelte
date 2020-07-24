@@ -8,6 +8,7 @@
 
   const dispatch = createEventDispatcher();
 
+  export let selectionsArray = [];
   export let firstLineNumber = 1;
   export let value = "";
   export let readonly = 'nocursor';
@@ -433,6 +434,20 @@
   function sleep(ms) {
     return new Promise(fulfil => setTimeout(fulfil, ms));
   }
+
+  $: {
+    updating_externally = true;
+    if (editor) {
+      editor.setOption('firstLineNumber', firstLineNumber);
+      editor.setValue(value);
+      selectionsArray.forEach(s => {
+        editor.getDoc().markText(s.anchor, s.head, {className: 'CodeMirror-selected'});
+      });
+      editor.getDoc().setSelections(selectionsArray);
+    }
+    updating_externally = false;
+  }
+
 </script>
 
 <style>

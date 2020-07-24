@@ -55,7 +55,7 @@
   }
 
   let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads', 'RuntimeProfiling', 'CostCentreStack'];
-  let diagramMode = 'HeapLive';
+  let diagramMode = 'CostCentreStack';
   const diagramModeElim = cases => d => {
     return cases[diagramMode];
   }
