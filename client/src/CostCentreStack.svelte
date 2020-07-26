@@ -38,8 +38,6 @@
         return;
     }
 
-    console.log('calculate currentStackData', currentStackData);
-
     // load stack module sources
     let oldModuleSource = stackModuleSource;
     stackModuleSource = {}
@@ -49,7 +47,6 @@
         if (moduleName in oldModuleSource && oldModuleSource[moduleName]) {
           stackModuleSource[moduleName] = oldModuleSource[moduleName];
         } else if (moduleName in moduleMap) {
-          console.log('fetching', moduleName);
           stackModuleSource[moduleName] = postData('http://localhost:3000/ext-stg/get-source-code', { stgbinPath: moduleMap[moduleName].stgbinPath });
         }
       }
@@ -59,15 +56,12 @@
   async function getSourceCodeForModule(moduleName) {
     if (moduleName in stackModuleSource) {
       const res = await stackModuleSource[moduleName];
-      //console.log('getSourceCodeForModule', moduleName, res);
       return res.sourceCode;
     }
     return '<not found>';
   }
 
   function handleKeypress(event) {
-    console.log(event);
-
     if (event.key === 'ArrowLeft') {
       sampleIndex -= event.shiftKey ? 300 : 1;
       if (sampleIndex < 0) sampleIndex = 0;
@@ -93,12 +87,9 @@
   $: if (eventlogData) {
     dataAll = eventlogData.dat.events;
     dataCCS = dataAll.filter(e => e.evSpec.tag === 'HeapProfCostCentre');
-    //console.log(dataCCS);
     dataSamples = dataAll.filter(e => e.evSpec.tag === 'HeapProfSampleCostCentre' || e.evSpec.tag === 'ProfSampleCostCentre');
-    //console.log(dataSamples);
     costCentreMap = {};
     dataCCS.forEach(d => costCentreMap[d.evSpec.heapProfCostCentreId] = d);
-    //console.log('costCentreMap', costCentreMap);
 
     postData('http://localhost:3000/ext-stg/get-module-mapping', {ghcStgAppPath: ghcStgApp})
       .then(d => {moduleMap = d;}, _ => {moduleMap = null;})
@@ -119,32 +110,24 @@
   let sourceBoxMap = {};
   let nameBoxMap = {};
 
-  const options = {};
-  const observer = new IntersectionObserver(function(entries, observer) {
-    entries.forEach(e => {
-      const idx = e.target.dataset.boxIndex;
-      nameBoxMap[idx].style.backgroundImage = e.isIntersecting ? 'linear-gradient(#8e508a, #5f5286)' : 'linear-gradient(#5f5286, #453b61)';
-    });
-  }, options);
-
   function registerNameBox(node, i) {
     nameBoxMap[i] = node;
-    node.style.backgroundImage = 'linear-gradient(#8e508a, #5f5286)';
-    node.style.backgroundImage = 'linear-gradient(#5f5286, #453b61)';
   }
   function registerSourceBox(node, i) {
     sourceBoxMap[i] = node;
-    observer.observe(node);
+  }
+
+  function highlightName(idx, value) {
+    nameBoxMap[idx].style.backgroundImage = value ? 'linear-gradient(#8e508a, #453b61)' : '';
   }
 
   // scrolling and jumping
-  function jumpToSourceBox(e) {
-    const idx = e.target.dataset.boxIndex;
-    sourceBoxMap[idx].scrollIntoView({behavior: 'smooth', block: 'nearest'});
+  function jumpToSourceBox(idx) {
+    sourceBoxMap[idx].scrollIntoView({behavior: 'smooth', block: 'center'});
   }
 </script>
 
-<nav class="my-nav">
+<nav class="ccs-nav">
 
   <label for="myfile-ghcstgapp">GHC-WPC ghc_stgapp file:</label>
   <input type="text" name="myfile-ghcstgapp" bind:value={ghcStgApp} title={ghcStgApp} style="flex-grow:1;">
@@ -156,38 +139,37 @@
   <CostCentreStackHeap {eventlogData} bind:currentStackIndex={sampleIndex} timeMarker={currentStack && currentStack.evTime} width="100%" height="100%"/>
 </div>
 
-<div class="my-container">
-  <div class="one">
+<div class="ccs-container">
+  <div class="name-boxes">
     <h4>
       Cost Centre Stack
     </h4>
+    <div class="names-container">
+      {#each currentStackData as cc, i}
+        <div class="list-group-item text-light cc-name-box not-selected-name-box"
+             use:registerNameBox={i}
+             on:click={() => jumpToSourceBox(i)}
+             data-box-index={i}
+        >
 
-    {#each currentStackData as cc, i}
-      <div class="list-group-item text-light"
-           style="word-wrap:break-word; margin: 0.0em; background-image: linear-gradient(#5f5286, #453b61)"
-           data-box-index={i}
-           use:registerNameBox={i}
-           on:click={jumpToSourceBox}
-      >
+            <span on:click={() => jumpToSourceBox(i)} style="color: lightgrey;">{cc.evSpec.heapProfModule}</span>
+            <br>
+            <span on:click={() => jumpToSourceBox(i)} style="color: white;">{cc.evSpec.heapProfLabel}</span>
+        </div>
+      {/each}
 
-        <span style="color: lightgrey;">{cc.evSpec.heapProfModule}</span>
-        <br>
-        <span style="color: white;">{cc.evSpec.heapProfLabel}</span>
-
-      </div>
-    {/each}
-
-    <pre>
-    {JSON.stringify(currentStack || {}, null, ' ')}
-    </pre>
+    </div>
   </div>
 
-  <div class="two">
+  <div class="source-boxes">
     {#each currentStackData as cc, i}
       {#await getSourceCodeForModule(cc.evSpec.heapProfModule)}
         <div class="spinner-border text-primary"></div>
       {:then sourceCode}
-        <div use:registerSourceBox={i} data-box-index={i}>
+        <div use:registerSourceBox={i} data-box-index={i}
+             on:mouseenter={() => {highlightName(i, true);}}
+             on:mouseleave={() => {highlightName(i, false);}}
+        >
           <SourceRangeBox
             srcLocString={cc.evSpec.heapProfSrcLoc}
             moduleName={cc.evSpec.heapProfModule}
@@ -206,25 +188,37 @@
 
 <style>
 
-  .my-container {
+  .ccs-container {
     width: 100%;
     height: auto;
 
     display: flex;
     flex-direction: row;
+    align-items: flex-start;
     margin: 0;
   }
 
-  .one {
+  .names-container {
+    overflow-y: scroll;
+    margin: 0;
+    padding: 0;
+  }
+
+  .name-boxes {
     flex-basis: 20%;
 
     display: flex;
     flex-direction: column;
 
+    height: calc(100vh - 21vmin);
+
+    position: sticky;
+    top: 21vmin;
+
     padding: 0.5em;
   }
 
-  .two {
+  .source-boxes {
     flex-basis: 80%;
 
     display: flex;
@@ -235,20 +229,30 @@
     color: white;
   }
 
-  .my-nav {
+  .ccs-nav {
     width: 100%;
     height: auto;
 
     display: flex;
     align-items: center;
 
-    background-image: linear-gradient(#8e508a, #453b61);
     background: #5f5286;
     color: white;
   }
 
-  .my-nav > * {
+  .ccs-nav > * {
     margin: 0.5em;
+  }
+
+  .cc-name-box {
+    word-wrap: break-word;
+    margin: 0;
+    cursor: pointer;
+    background-image: linear-gradient(#5f5286, #453b61);
+  }
+
+  .cc-name-box:hover {
+    background-image: linear-gradient(#8e508a, #453b61);
   }
 
 </style>
