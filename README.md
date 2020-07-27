@@ -55,5 +55,4 @@ Heap Size
 ![](https://github.com/grin-compiler/haskell-code-spot/blob/master/doc/images/heapsize.png)
 
 Cost Center based stack trace in step-by-step style.
-![](https://github.com/grin-compiler/haskell-code-spot/blob/master/doc/images/stacktrace1.jpg)
-![](https://github.com/grin-compiler/haskell-code-spot/blob/master/doc/images/stacktrace2.jpg)
+![](https://github.com/grin-compiler/haskell-code-spot/blob/master/doc/images/haskell-code-spot-01.jpg)
