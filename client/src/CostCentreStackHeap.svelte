@@ -63,7 +63,11 @@
     title.append('tspan')
       .style('fill', 'red')
       .style('stroke', 'none')
-      .text('Heap Live');
+      .text('Heap Live, ');
+    title.append('tspan')
+      .style('fill', 'green')
+      .style('stroke', 'none')
+      .text('GC');
 
     xAxis = d3.axisBottom(xScale)
       .tickFormat(d => {return d3.format('.12~s')(d) + 's';})
