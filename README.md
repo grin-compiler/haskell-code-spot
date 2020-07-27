@@ -54,5 +54,5 @@ Heap Live
 Heap Size
 ![](https://github.com/grin-compiler/haskell-code-spot/blob/master/doc/images/heapsize.png)
 
-Cost Center based stack trace in step-by-step style.
+Cost Center based stack trace in step-by-step style. See the [demo video](https://twitter.com/csaba_hruska/status/1287701943863980032).
 ![](https://github.com/grin-compiler/haskell-code-spot/blob/master/doc/images/haskell-code-spot-01.jpg)
