@@ -118,7 +118,13 @@
   }
 
   function highlightName(idx, value) {
-    nameBoxMap[idx].style.backgroundImage = value ? 'linear-gradient(#8e508a, #453b61)' : '';
+    if (value) {
+      for (const i in nameBoxMap) {
+        nameBoxMap[i].style.backgroundImage = (+i === idx) ? 'linear-gradient(#8e508a, #453b61)' : '';
+      }
+    } else {
+      nameBoxMap[idx].style.backgroundImage = '';
+    }
   }
 
   // scrolling and jumping
