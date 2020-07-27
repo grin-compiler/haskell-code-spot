@@ -109,6 +109,7 @@
   // highlight on screen source boxes
   let sourceBoxMap = {};
   let nameBoxMap = {};
+  let nameScrollingDiv;
 
   function registerNameBox(node, i) {
     nameBoxMap[i] = node;
@@ -119,9 +120,21 @@
 
   function highlightName(idx, value) {
     if (value) {
+      let scrollHeight = 0;
       for (const i in nameBoxMap) {
         nameBoxMap[i].style.backgroundImage = (+i === idx) ? 'linear-gradient(#8e508a, #453b61)' : '';
+
+        if (i < idx) {
+          scrollHeight += nameBoxMap[i].getBoundingClientRect().height;
+        }
       }
+      // scroll to active name box
+      const scrollingRect = nameScrollingDiv.getBoundingClientRect();
+      nameScrollingDiv.scrollTo({
+        top: scrollHeight - scrollingRect.height/3,
+        left: 0,
+        behavior: 'smooth'
+      });
     } else {
       nameBoxMap[idx].style.backgroundImage = '';
     }
@@ -150,7 +163,7 @@
     <h4>
       Cost Centre Stack
     </h4>
-    <div class="names-container">
+    <div class="names-container" bind:this={nameScrollingDiv}>
       {#each currentStackData as cc, i}
         <div class="list-group-item text-light cc-name-box not-selected-name-box"
              use:registerNameBox={i}
