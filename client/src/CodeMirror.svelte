@@ -42,13 +42,6 @@
     return editor;
   }
 
-  export async function slice(src, lineStart, lineEnd) {
-    await set(src.split('\n').slice(lineStart-1, lineEnd).join('\n'));
-    if (editor) {
-      editor.setOption('firstLineNumber', lineStart);
-    }
-  }
-
   export async function set(new_value, new_mode=mode, new_theme=theme) {
     if (new_mode !== mode || new_theme !== theme) {
       await createEditor((mode = new_mode), (theme = new_theme));

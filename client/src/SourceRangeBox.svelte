@@ -17,7 +17,7 @@
   let startLineNumber = originalSourceSpan.startLineNumber;
   let endLineNumber   = originalSourceSpan.endLineNumber;
 
-  let sourceCodeLines = sourceCode.split('\n');
+  let sourceCodeLines = sourceCode.split(/\r\n|\r|\n/);
   let selectionsArray = [];
 
   function getSourceRange(startLine, endLine) {

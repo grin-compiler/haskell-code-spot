@@ -5,7 +5,6 @@
   import HeapLive         from './HeapLive.svelte';
   import HeapAllocated    from './HeapAllocated.svelte';
   import ActiveThreads    from './ActiveThreads.svelte';
-  import RuntimeProfiling from './RuntimeProfiling.svelte'
   import CostCentreStack  from './CostCentreStack.svelte';
 
   let response;
@@ -54,7 +53,7 @@
     eventlog = data;
   }
 
-  let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads', 'RuntimeProfiling', 'CostCentreStack'];
+  let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads', 'CostCentreStack'];
   let diagramMode = 'CostCentreStack';
   const diagramModeElim = cases => d => {
     return cases[diagramMode];
@@ -62,11 +61,10 @@
 
   let diagramOptions = [
     { id: 1, text: 'Heap Size', value: 'HeapSize' },
-    { id: 2, text: 'Heap Live Chart Zoo', value: 'HeapLive' },
+    { id: 2, text: 'Heap Live (Chart Zoo)', value: 'HeapLive' },
     { id: 3, text: 'Heap Allocated', value: 'HeapAllocated' },
     { id: 4, text: 'Active Threads', value: 'ActiveThreads' },
-    { id: 5, text: 'Runtime profiling', value: 'RuntimeProfiling' },
-    { id: 6, text: 'Cost Centre Stack', value: 'CostCentreStack' }
+    { id: 5, text: 'Cost Centre Stack', value: 'CostCentreStack' }
   ];
   let diagramSelected;
 
@@ -77,7 +75,6 @@
       HeapLive:         ['HeapLive', 'HeapSize'],
       HeapAllocated:    ['HeapAllocated'],
       ActiveThreads:    ['RunThread', 'StopThread'],
-      RuntimeProfiling: ['HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre'],
       CostCentreStack:  ['HeapSize', 'HeapLive', 'HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre', 'GCWork']
     })(diagramMode);
     fetchEventData();
@@ -172,8 +169,6 @@ Haskell Code Spot
 <HeapAllocated eventlogData={eventlog}/>
 {:else if diagramMode == 'ActiveThreads'}
 <ActiveThreads eventlogData={eventlog}/>
-{:else if diagramMode == 'RuntimeProfiling'}
-<RuntimeProfiling eventlogData={eventlog}/>
 {:else if diagramMode == 'CostCentreStack'}
 <CostCentreStack eventlogData={eventlog}/>
 {/if}
