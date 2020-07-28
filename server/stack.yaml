@@ -2,4 +2,4 @@ resolver: lts-16.0
 
 packages:
   - '.'
-  - '../../ghc-whole-program-compiler-project/external-stg'
+#  - '../../ghc-whole-program-compiler-project/external-stg'

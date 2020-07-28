@@ -15,7 +15,7 @@ executable code-spot-server
                   , EndPoint.SourceView
                   , EndPoint.EventLog
                   , EndPoint.FileView
-                  , EndPoint.ExtStg
+--                  , EndPoint.ExtStg
                   , Data.List.Extra
 
   default-language: Haskell2010
@@ -33,4 +33,4 @@ executable code-spot-server
                   , bytestring
                   , base64-bytestring
                   , http-types
-                  , external-stg
+--                  , external-stg

@@ -9,7 +9,8 @@
 
   let response;
   let restResponse = '';
-  let eventlogFilepath = '/home/csaba/haskell/grin-compiler/ghc-wpc-sample-programs/game-logic-experiment/.stack-work/dist/x86_64-linux/Cabal-3.2.0.0/build/minigame/minigame.eventlog';
+  //let eventlogFilepath = '/home/csaba/haskell/grin-compiler/ghc-wpc-sample-programs/game-logic-experiment/.stack-work/dist/x86_64-linux/Cabal-3.2.0.0/build/minigame/minigame.eventlog';
+  let eventlogFilepath = '../data/grin.eventlog';
   let eventlogOffset = 0;
   let eventlogIndex = 100000;
   let eventKinds = [];
