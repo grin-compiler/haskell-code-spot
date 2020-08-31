@@ -3,6 +3,10 @@
 Visual tool to spot odd runtime behaviour of Haskell programs.  
 **Keywords:** *data scientist, GHC eventlog, UI experiments, creative/live coding*
 
+### Blog
+
+- [WebUI for Haskell tooling!](https://www.patreon.com/posts/41065262)
+
 ### Learn these for coding
 
 - HTML + CSS + JS *(https://www.youtube.com/kepowob/featured)*
