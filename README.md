@@ -3,6 +3,8 @@
 Visual tool to spot odd runtime behaviour of Haskell programs.  
 **Keywords:** *data scientist, GHC eventlog, UI experiments, creative/live coding*
 
+**NOTE:** GHC-WPC is optional, Haskell Code Spot works with vanilla GHC eventlog out of the box.
+
 ### Blog
 
 - [WebUI for Haskell tooling!](https://www.patreon.com/posts/41065262)
