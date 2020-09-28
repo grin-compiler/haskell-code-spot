@@ -27,11 +27,11 @@ Visual tool to spot odd runtime behaviour of Haskell programs.
 
 In one terminal:
 
-    $ cd server && stack build && stack exec code-spot-server
+    $ (cd server && stack build && stack exec code-spot-server)
 
 In another terminal:
 
-    $ cd client/src && npm install && npm run dev
+    $ (cd client/src && npm install && npm run dev)
 
 Now open [http://localhost:5000/](http://localhost:5000/) in your browser!
 
