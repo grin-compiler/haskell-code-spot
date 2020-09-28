@@ -6,6 +6,7 @@
   import HeapAllocated    from './HeapAllocated.svelte';
   import ActiveThreads    from './ActiveThreads.svelte';
   import CostCentreStack  from './CostCentreStack.svelte';
+  import ModuleBrowser    from './ModuleBrowser.svelte';
 
   let response;
   let restResponse = '';
@@ -15,32 +16,8 @@
   let eventlogIndex = 100000;
   let eventKinds = [];
   let eventlog;
+  let useEventlog = true;
 
-  onMount(() => fetchEventData());
-
-  // function webSocketTest()
-  // {
-  //   var ws = new WebSocket("ws://localhost:3000");
-
-  //   ws.onopen = () => {
-  //     ws.send("initial from js");
-  //   };
-
-  //   ws.onmessage = evt => {
-  //     var m = evt.data;
-  //     response = "WS received: " + m;
-  //     console.log( m );
-  //   };
-
-  //   ws.onclose = function() {
-  //     //response = "ws closed";
-  //     //alert("ws closed");
-  //   };
-
-  //   window.onbeforeunload = evt => {
-  //     socket.close();
-  //   };
-  // }
 
   async function fetchEventData() {
     let data = await postData('http://localhost:3000/eventlog',{
@@ -54,39 +31,53 @@
     eventlog = data;
   }
 
-  let diagramModes = ['HeapSize', 'HeapLive', 'HeapAllocated', 'ActiveThreads', 'CostCentreStack'];
-  let diagramMode = 'CostCentreStack';
-  const diagramModeElim = cases => d => {
-    return cases[diagramMode];
-  }
-
   let diagramOptions = [
-    { id: 1, text: 'Heap Size', value: 'HeapSize' },
-    { id: 2, text: 'Heap Live (Chart Zoo)', value: 'HeapLive' },
-    { id: 3, text: 'Heap Allocated', value: 'HeapAllocated' },
-    { id: 4, text: 'Active Threads', value: 'ActiveThreads' },
-    { id: 5, text: 'Cost Centre Stack', value: 'CostCentreStack' }
+    { text:   'Heap Size'
+    , value:  'HeapSize'
+    , eventlogFilter: ['HeapSize']
+    },
+    { text:   'Heap Live (Chart Zoo)'
+    , value:  'HeapLive'
+    , eventlogFilter: ['HeapLive', 'HeapSize']
+    },
+    { text:   'Heap Allocated'
+    , value:  'HeapAllocated'
+    , eventlogFilter: ['HeapAllocated']
+    },
+    { text:   'Active Threads'
+    , value:  'ActiveThreads'
+    , eventlogFilter: ['RunThread', 'StopThread']
+    },
+    { text:   'Cost Centre Stack'
+    , value:  'CostCentreStack'
+    , eventlogFilter: ['HeapSize', 'HeapLive', 'HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre', 'GCWork']
+    },
+    { text:   'Module Browser'
+    , value:  'ModuleBrowser'
+    , eventlogFilter: null  // not all view requires eventlog data
+    }
   ];
+
+  let diagramMode = 'CostCentreStack';
   let diagramSelected;
 
-  function handleDiagramSubmit() {
+  $: if (diagramSelected) {
     diagramMode = diagramSelected.value;
-    eventKinds = diagramModeElim({
-      HeapSize:         ['HeapSize'],
-      HeapLive:         ['HeapLive', 'HeapSize'],
-      HeapAllocated:    ['HeapAllocated'],
-      ActiveThreads:    ['RunThread', 'StopThread'],
-      CostCentreStack:  ['HeapSize', 'HeapLive', 'HeapProfCostCentre', 'HeapProfSampleCostCentre', 'ProfSampleCostCentre', 'GCWork']
-    })(diagramMode);
-    fetchEventData();
+    eventKinds = diagramSelected.eventlogFilter;
+    // not all view requires eventlog data
+    useEventlog = eventKinds !== null;
+    if (useEventlog) {
+      fetchEventData();
+    }
   }
 
 </script>
 
 <style>
 
-  :global(html) {
+  :global(html, body) {
     font-size: 12px;
+    padding: 0;
   }
 
   :global(text.chart-title) {
@@ -125,7 +116,6 @@
     display: flex;
     align-items: center;
 
-
     background: #5f5286;
     color: white;
   }
@@ -135,41 +125,55 @@
   }
 
   .my-title {
-
     padding: 0.1em 0.3em;
     margin: 0;
+  }
 
+  .fullscreen {
+    height: 100vh;
+    display: flex;
+    flex-flow: column;
+    align-items: stretch;
+    background: yellow;
+  }
+
+  .top-container {
+    padding: 0.5em;
   }
 
 </style>
+<div class:fullscreen="{diagramMode === 'ModuleBrowser'}" class="top-container">
 <nav class="my-nav">
 
-<h3 class="my-title">
-Haskell Code Spot
-</h3>
+  <h3 class="my-title">
+  Haskell Code Spot
+  </h3>
 
-      <select bind:value={diagramSelected} on:change="{ () => handleDiagramSubmit(diagramSelected) }">
-      {#each diagramOptions as diagramOption}
-        <option value={diagramOption} selected={diagramMode === diagramOption.value}>
-          {diagramOption.text}
-        </option>
-      {/each}
-    </select>
+  <select bind:value={diagramSelected}>
+    {#each diagramOptions as diagramOption}
+      <option value={diagramOption} selected={diagramMode === diagramOption.value}>
+        {diagramOption.text}
+      </option>
+    {/each}
+  </select>
 
   <label for="myfile">Eventlog file:</label>
   <input type="text" name="myfile" bind:value={eventlogFilepath} title={eventlogFilepath} style="flex-grow:1;">
-  <button on:click={fetchEventData}>Fetch Event Data</button>
+  <button on:click={fetchEventData} disabled='{!useEventlog}'>Fetch Event Data</button>
 
 </nav>
 
-{#if diagramMode == 'HeapSize'}
+{#if diagramMode === 'HeapSize'}
 <HeapSize eventlogData={eventlog}/>
-{:else if diagramMode == 'HeapLive'}
+{:else if diagramMode === 'HeapLive'}
 <HeapLive eventlogData={eventlog}/>
-{:else if diagramMode == 'HeapAllocated'}
+{:else if diagramMode === 'HeapAllocated'}
 <HeapAllocated eventlogData={eventlog}/>
-{:else if diagramMode == 'ActiveThreads'}
+{:else if diagramMode === 'ActiveThreads'}
 <ActiveThreads eventlogData={eventlog}/>
-{:else if diagramMode == 'CostCentreStack'}
+{:else if diagramMode === 'CostCentreStack'}
 <CostCentreStack eventlogData={eventlog}/>
+{:else if diagramMode === 'ModuleBrowser'}
+<ModuleBrowser/>
 {/if}
+</div>
