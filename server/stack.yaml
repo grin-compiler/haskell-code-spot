@@ -3,3 +3,7 @@ resolver: lts-16.0
 packages:
   - '.'
 #  - '../../ghc-whole-program-compiler-project/external-stg'
+
+#flags:
+#  code-spot-server:
+#    enable-ext-stg: true

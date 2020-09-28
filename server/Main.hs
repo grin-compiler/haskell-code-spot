@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, LambdaCase #-}
+{-# LANGUAGE OverloadedStrings, LambdaCase, CPP #-}
 module Main where
 
 import Web.Scotty
@@ -26,7 +26,10 @@ import FilterEvents
 import qualified EndPoint.SourceView  as SourceView
 import qualified EndPoint.EventLog    as EventLog
 import qualified EndPoint.FileView    as FileView
---import qualified EndPoint.ExtStg      as ExtStg
+
+#ifdef WITH_EXT_STG
+import qualified EndPoint.ExtStg      as ExtStg
+#endif
 
 port = 3000
 
@@ -46,7 +49,9 @@ httpApp = scottyApp $ do
   EventLog.endpoints
   SourceView.endpoints
   FileView.endpoints
---  ExtStg.endpoints
+#ifdef WITH_EXT_STG
+  ExtStg.endpoints
+#endif
   notFound notFoundA
 
 notFoundA :: ActionM ()
