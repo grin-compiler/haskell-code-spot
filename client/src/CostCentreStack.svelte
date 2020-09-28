@@ -47,7 +47,7 @@
         if (moduleName in oldModuleSource && oldModuleSource[moduleName]) {
           stackModuleSource[moduleName] = oldModuleSource[moduleName];
         } else if (moduleName in moduleMap) {
-          stackModuleSource[moduleName] = postData('http://localhost:3000/ext-stg/get-source-code', { stgbinPath: moduleMap[moduleName].stgbinPath });
+          stackModuleSource[moduleName] = postData('http://localhost:3000/ext-stg/get-source-code', { modpakPath: moduleMap[moduleName].modpakPath });
         }
       }
     }
